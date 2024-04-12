@@ -1,30 +1,6 @@
-.bg-initial-config {
-    background-image: url("../img/bg.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.bg-student {
-    background-image: url("../img/bg-student.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.bg-admin {
-    background-image: url("../img/bg-admin.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
 .wrapper {
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.glass-card {
-    backdrop-filter: blur(5px);
-    background-color: rgba(56, 63, 69, 0.5);
-    color: white;
 }

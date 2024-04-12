@@ -2,16 +2,16 @@
 
 <div class="wrapper">
     <div class="loading d-none">
-        <span class="alert alert-light d-block text-center">Please wait a moment . . .</span>
+        <span class="alert alert-primary d-block text-center">Please wait a moment . . .</span>
         <img src="<?= $base_url ?>dist/img/loading.gif" alt="">
     </div>
 
     <div class="initial-configurations-form">
         <span class="alert alert-danger text-center d-none" id="alert_message"></span>
 
-        <div class="glass-card" style="width: 500px;">
+        <div class="card bg-gray" style="width: 500px;">
             <div class="card-header text-center">
-                <img src="<?= $base_url ?>dist/img/logo.png" style="width: 150px;" alt="Logo" class="mb-2 pt-3">
+                <img src="<?= $base_url ?>dist/img/image-placeholder.png" style="width: 150px;" alt="Logo" class="mb-2 img-circle pt-3">
                 <h1>Infirmary Scheduling System</h1>
             </div>
             <div class="card-body">

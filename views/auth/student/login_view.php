@@ -4,9 +4,9 @@
     <div class="login-form">
         <span class="alert alert-danger text-center d-none" id="alert_message"></span>
 
-        <div class="glass-card" style="width: 500px;">
+        <div class="card bg-gray" style="width: 500px;">
             <div class="card-header text-center">
-                <img src="./dist/img/logo.png" style="width: 150px;" alt="Logo" class="mb-2 pt-3">
+                <img src="./dist/img/image-placeholder.png" style="width: 150px;" alt="Logo" class="mb-2 img-circle pt-3">
                 <h1>Infirmary Scheduling System</h1>
             </div>
             <div class="card-body">
