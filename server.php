@@ -138,6 +138,8 @@ if (isset($_POST["register"])) {
 }
 
 if (isset($_POST["student_login"])) {
+    $response = false;
+
     $student_number = $_POST["student_number"];
     $password = $_POST["password"];
 
@@ -152,18 +154,81 @@ if (isset($_POST["student_login"])) {
         $rows++;
     }
 
-    if ($rows)
-    {
-        
+    if ($rows) {
+        if (password_verify($password, $db_password)) {
+            $_SESSION["notification"] = array(
+                "title" => "Success",
+                "text" => "Student account is valid!",
+                "icon" => "success",
+            );
+
+            $response = true;
+        } else {
+            $_SESSION["notification"] = array(
+                "title" => "Oops..",
+                "text" => "Invalid Student Number or Password",
+                "icon" => "error",
+            );
+
+            $response = false;
+        }
+    } else {
+        $_SESSION["notification"] = array(
+            "title" => "Oops..",
+            "text" => "Invalid Student Number or Password",
+            "icon" => "error",
+        );
+
+        $response = false;
     }
 
-    if (password_verify($password, $db_password)) {
-        echo json_encode(true);
+    echo json_encode($response);
+}
+
+if (isset($_POST["admin_login"])) {
+    $response = false;
+
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+
+    $sql = "SELECT * FROM tbl_accounts WHERE username = '" . $username . "'";
+    $stmt = sqlsrv_query($conn, $sql);
+
+    $rows = 0;
+
+    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $db_password = $row["password"];
+
+        $rows++;
     }
 
-    // if ($rows > 0) {
-    //     echo json_encode(false);
-    // } else {
-    //     echo json_encode(true);
-    // }
+    if ($rows) {
+        if (password_verify($password, $db_password)) {
+            $_SESSION["notification"] = array(
+                "title" => "Success",
+                "text" => "Administrator account is valid!",
+                "icon" => "success",
+            );
+
+            $response = true;
+        } else {
+            $_SESSION["notification"] = array(
+                "title" => "Oops..",
+                "text" => "Invalid Username or Password",
+                "icon" => "error",
+            );
+
+            $response = false;
+        }
+    } else {
+        $_SESSION["notification"] = array(
+            "title" => "Oops..",
+            "text" => "Invalid Username or Password",
+            "icon" => "error",
+        );
+
+        $response = false;
+    }
+
+    echo json_encode($response);
 }

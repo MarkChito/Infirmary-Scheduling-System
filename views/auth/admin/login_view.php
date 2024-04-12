@@ -17,8 +17,8 @@
 
                 <form action="javascript:void(0)" id="admin_login_form">
                     <div class="form-group mb-3">
-                        <label for="admin_login_student_id">Username</label>
-                        <input type="text" class="form-control" id="admin_login_student_id" required>
+                        <label for="admin_login_username">Username</label>
+                        <input type="text" class="form-control" id="admin_login_username" required>
                     </div>
                     <div class="form-group mb-2">
                         <label for="admin_login_password">Password</label>

@@ -316,6 +316,9 @@
                 const student_number = $("#login_student_number").val();
                 const password = $("#login_password").val();
 
+                $("#login_submit").text("Please wait...");
+                $("#login_submit").attr("disabled", true);
+
                 var formData = new FormData();
                 
                 formData.append('student_number', student_number);
@@ -327,11 +330,41 @@
                     url: 'server.php',
                     data: formData,
                     type: 'POST',
-                    // dataType: 'JSON',
+                    dataType: 'JSON',
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        console.log(response);
+                        location.href = base_url;
+                    },
+                    error: function(_, _, error) {
+                        console.error(error);
+                    }
+                });
+            })
+            
+            $("#admin_login_form").submit(function(){
+                const username = $("#admin_login_username").val();
+                const password = $("#admin_login_password").val();
+
+                $("#admin_login_submit").text("Please wait...")
+                $("#admin_login_submit").attr("disabled", true);
+
+                var formData = new FormData();
+                
+                formData.append('username', username);
+                formData.append('password', password);
+
+                formData.append('admin_login', true);
+                
+                $.ajax({
+                    url: 'server.php',
+                    data: formData,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        location.href = base_url + "admin";
                     },
                     error: function(_, _, error) {
                         console.error(error);
