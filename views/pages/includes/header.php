@@ -1,6 +1,8 @@
 <?php
 $current_tab = $_SESSION["current_tab"];
 $user_id = $_SESSION["user_id"];
+$user_type = $_SESSION["user_type"];
+$conn = $_SESSION["conn"];
 
 switch ($current_tab) {
     case "dashboard":
@@ -13,6 +15,11 @@ switch ($current_tab) {
         break;
     case "account":
         $title = "Account Settings";
+
+        break;
+
+    case "appointments":
+        $title = "My Appointments";
 
         break;
     default:
@@ -41,6 +48,9 @@ switch ($current_tab) {
     <link rel="stylesheet" href="<?= $base_url ?>plugins/daterangepicker/daterangepicker.css?v=<?= $version ?>">
     <link rel="stylesheet" href="<?= $base_url ?>plugins/summernote/summernote-bs4.min.css?v=<?= $version ?>">
     <link rel="stylesheet" href="<?= $base_url ?>plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css?v=<?= $version ?>">
+    <link rel="stylesheet" href="<?= $base_url ?>plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="<?= $base_url ?>plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="<?= $base_url ?>plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -67,7 +77,7 @@ switch ($current_tab) {
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="javascript:void(0)" role="button">
+                    <a class="nav-link text-danger logout" href="javascript:void(0)" role="button">
                         <i class="fas fa-sign-out-alt"></i>
                     </a>
                 </li>
@@ -81,7 +91,7 @@ switch ($current_tab) {
                         <img src="<?= $base_url ?>dist/img/default-user-image.png" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="<?= $base_url ?>profile" class="d-block" id="student_name">Juan Dela Cruz</a>
+                        <a href="<?= $user_type == "student" ? $base_url . "profile" : "javascript:void(0)" ?>" class="d-block" id="user_name">Loading...</a>
                     </div>
                 </div>
 
@@ -93,12 +103,20 @@ switch ($current_tab) {
                                 <p>Dashboard</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="<?= $base_url ?>profile" class="nav-link <?= $_SESSION["current_tab"] == "profile" ? "active" : null ?>">
-                                <i class="nav-icon fas fa-user-alt"></i>
-                                <p>My Profile</p>
-                            </a>
-                        </li>
+                        <?php if ($user_type == "student") : ?>
+                            <li class="nav-item">
+                                <a href="<?= $base_url ?>appointments" class="nav-link <?= $_SESSION["current_tab"] == "appointments" ? "active" : null ?>">
+                                    <i class="nav-icon fas fa-calendar-alt"></i>
+                                    <p>My Appointments</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="<?= $base_url ?>profile" class="nav-link <?= $_SESSION["current_tab"] == "profile" ? "active" : null ?>">
+                                    <i class="nav-icon fas fa-user-alt"></i>
+                                    <p>My Profile</p>
+                                </a>
+                            </li>
+                        <?php endif ?>
                         <li class="nav-item">
                             <a href="<?= $base_url ?>account" class="nav-link <?= $_SESSION["current_tab"] == "account" ? "active" : null ?>">
                                 <i class="nav-icon fas fa-cog"></i>
@@ -106,7 +124,7 @@ switch ($current_tab) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="javascript:void(0)" class="nav-link">
+                            <a href="javascript:void(0)" class="nav-link logout">
                                 <i class="nav-icon fas fa-sign-out-alt"></i>
                                 <p>Logout</p>
                             </a>

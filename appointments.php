@@ -17,9 +17,9 @@ if (empty($env_data)) {
     $base_url = $env_data["BASE_URL"];
 
     if (isset($_SESSION["user_id"]) && $_SESSION["user_type"] == "student") {
-        $_SESSION["current_tab"] = "dashboard";
+        $_SESSION["current_tab"] = "appointments";
 
-        include "./views/pages/student/dashboard_view.php";
+        include "./views/pages/student/appointments_view.php";
     } else {
         $_SESSION["notification"] = array(
             "title" => "Oops..",

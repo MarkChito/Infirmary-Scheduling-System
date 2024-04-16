@@ -127,7 +127,7 @@ if (isset($_POST["register"])) {
     sqlsrv_query($conn, $sql_2);
 
     $_SESSION["notification"] = array(
-        "title" => "Success",
+        "title" => "Success!",
         "text" => "Your account has been successfully saved in the database.",
         "icon" => "success",
     );
@@ -149,7 +149,7 @@ if (isset($_POST["student_login"])) {
     $rows = 0;
 
     while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $db_user_id = $row["account_id"];
+        $db_user_id = $row["id"];
         $db_name = $row["name"];
         $db_password = $row["password"];
         $db_user_type = $row["user_type"];
@@ -163,7 +163,7 @@ if (isset($_POST["student_login"])) {
             $_SESSION["user_type"] = $db_user_type;
 
             $_SESSION["notification"] = array(
-                "title" => "Success",
+                "title" => "Success!",
                 "text" => "Welcome, " . $db_name . "!",
                 "icon" => "success",
             );
@@ -188,6 +188,8 @@ if (isset($_POST["student_login"])) {
         $response = false;
     }
 
+    sqlsrv_close($conn);
+
     echo json_encode($response);
 }
 
@@ -211,7 +213,7 @@ if (isset($_POST["admin_login"])) {
     if ($rows) {
         if (password_verify($password, $db_password)) {
             $_SESSION["notification"] = array(
-                "title" => "Success",
+                "title" => "Success!",
                 "text" => "Administrator account is valid!",
                 "icon" => "success",
             );
@@ -236,5 +238,133 @@ if (isset($_POST["admin_login"])) {
         $response = false;
     }
 
+    sqlsrv_close($conn);
+
     echo json_encode($response);
+}
+
+if (isset($_POST["get_user_data"])) {
+    $user_id = $_POST["user_id"];
+
+    $sql = "SELECT * FROM tbl_accounts WHERE id = '" . $user_id . "'";
+    $stmt = sqlsrv_query($conn, $sql);
+
+    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $response = array(
+            "name" => $row["name"],
+        );
+    }
+
+    sqlsrv_close($conn);
+
+    echo json_encode($response);
+}
+
+if (isset($_POST["get_student_data"])) {
+    $user_id = $_POST["user_id"];
+
+    $sql_1 = "SELECT * FROM tbl_accounts WHERE id = '" . $user_id . "'";
+    $stmt_1 = sqlsrv_query($conn, $sql_1);
+
+    while ($row_1 = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
+        $student_number = $row_1["student_number"];
+    }
+
+    $sql_2 = "SELECT * FROM tbl_students WHERE student_number = '" . $student_number . "'";
+    $stmt_2 = sqlsrv_query($conn, $sql_2);
+
+    while ($row_2 = sqlsrv_fetch_array($stmt_2, SQLSRV_FETCH_ASSOC)) {
+        $response = array(
+            "student_number" => $row_2["student_number"],
+            "name" => $row_2["name"],
+            "email" => $row_2["email"],
+            "program" => $row_2["program"],
+            "school_branch" => $row_2["school_branch"],
+            "mobile_number" => $row_2["mobile_number"],
+            "year_level" => $row_2["year_level"],
+        );
+    }
+
+    sqlsrv_close($conn);
+
+    echo json_encode($response);
+}
+
+if (isset($_POST["get_schedule"])) {
+    $day = $_POST["day"];
+
+    $sql = "SELECT TOP 1 * FROM tbl_available_schedules WHERE day = '" . $day . "' AND status = 'Available'";
+    $stmt = sqlsrv_query($conn, $sql);
+
+    $row_count = 0;
+
+    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $row_count++;
+
+        if ($row_count > 0) {
+            $response = array(
+                "id" => $row["id"],
+                "day" => $row["day"],
+                "start_time" => $row["start_time"],
+                "end_time" => $row["end_time"],
+            );
+        }
+    }
+
+    sqlsrv_close($conn);
+
+    echo json_encode($response);
+}
+
+if (isset($_POST["add_appointment"])) {
+    $user_id = $_POST["user_id"];
+    $schedule_id = $_POST["schedule_id"];
+    $day = $_POST["day"];
+    $start_time = $_POST["start_time"];
+    $end_time = $_POST["end_time"];
+
+    $sql_1 = "SELECT * FROM tbl_appointments WHERE student_id = '" . $user_id . "' AND status = 'Pending'";
+    $stmt_1 = sqlsrv_query($conn, $sql_1);
+
+    $row_count = 0;
+
+    while ($row = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
+        $row_count++;
+    }
+
+    if ($row_count == 0) {
+        $sql_2 = "INSERT INTO tbl_appointments (student_id, day, start_time, end_time, status) VALUES ('" . $user_id . "', '" . $day . "', '" . $start_time . "', '" . $end_time . "', 'Pending')";
+        sqlsrv_query($conn, $sql_2);
+
+        $sql_3 = "UPDATE tbl_available_schedules SET status = 'Not Available' WHERE id = '" . $schedule_id . "'";
+        sqlsrv_query($conn, $sql_3);
+
+        $_SESSION["notification"] = array(
+            "title" => "Success!",
+            "text" => "Your request has been submited. Please wait for the confirmation from the Administrator.",
+            "icon" => "success",
+        );
+    } else {
+        $_SESSION["notification"] = array(
+            "title" => "Oops...",
+            "text" => "You still have a pending request. Please contact your Administrator for more help.",
+            "icon" => "error",
+        );
+    }
+
+    sqlsrv_close($conn);
+
+    echo json_encode(true);
+}
+
+if (isset($_POST["logout"])) {
+    unset($_SESSION["user_id"], $_SESSION["user_type"]);
+
+    $_SESSION["notification"] = array(
+        "title" => "Success",
+        "text" => "You had been signed out.",
+        "icon" => "success",
+    );
+
+    echo json_encode(true);
 }
