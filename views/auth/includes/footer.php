@@ -113,6 +113,8 @@
                 sweetalert(notification);
             }
 
+            disable_developer_functions(true);
+
             $("#initial_configurations_form").submit(function() {
                 const server_name = $("#initial_configurations_server_name").val();
                 const database = $("#initial_configurations_database_name").val();
@@ -276,7 +278,7 @@
                                 $("#error_register_student_number").text("Student Number is already in use");
                                 $("#error_register_student_number").removeClass("d-none");
                                 $("#register_student_number").addClass("is-invalid");
-                                
+
                                 $("#register_submit").removeAttr("disabled");
                                 $("#register_submit").text("Submit");
                             }
@@ -312,7 +314,7 @@
                 $("#error_register_password").addClass("d-none");
             })
 
-            $("#login_form").submit(function(){
+            $("#login_form").submit(function() {
                 const student_number = $("#login_student_number").val();
                 const password = $("#login_password").val();
 
@@ -320,12 +322,12 @@
                 $("#login_submit").attr("disabled", true);
 
                 var formData = new FormData();
-                
+
                 formData.append('student_number', student_number);
                 formData.append('password', password);
 
                 formData.append('student_login', true);
-                
+
                 $.ajax({
                     url: 'server.php',
                     data: formData,
@@ -334,15 +336,19 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        location.href = base_url;
+                        if (response) {
+                            location.href = base_url + "dashboard";
+                        } else {
+                            location.href = base_url;
+                        }
                     },
                     error: function(_, _, error) {
                         console.error(error);
                     }
                 });
             })
-            
-            $("#admin_login_form").submit(function(){
+
+            $("#admin_login_form").submit(function() {
                 const username = $("#admin_login_username").val();
                 const password = $("#admin_login_password").val();
 
@@ -350,12 +356,12 @@
                 $("#admin_login_submit").attr("disabled", true);
 
                 var formData = new FormData();
-                
+
                 formData.append('username', username);
                 formData.append('password', password);
 
                 formData.append('admin_login', true);
-                
+
                 $.ajax({
                     url: 'server.php',
                     data: formData,
@@ -408,6 +414,34 @@
                     text: notification.text,
                     icon: notification.icon
                 });
+            }
+
+            function disable_developer_functions(enabled) {
+                if (enabled) {
+                    $(document).on('contextmenu', function() {
+                        return false;
+                    });
+
+                    $(document).on('keydown', function(event) {
+                        if (event.ctrlKey && event.shiftKey) {
+                            if (event.keyCode === 74) {
+                                return false;
+                            }
+
+                            if (event.keyCode === 67) {
+                                return false;
+                            }
+
+                            if (event.keyCode === 73) {
+                                return false;
+                            }
+                        }
+
+                        if (event.ctrlKey && event.keyCode === 85) {
+                            return false;
+                        }
+                    });
+                }
             }
         })
     </script>

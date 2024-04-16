@@ -6,7 +6,7 @@
 
         <div class="card bg-gray" style="width: 500px;">
             <div class="card-header text-center">
-                <img src="./dist/img/image-placeholder.png" style="width: 150px;" alt="Logo" class="mb-2 img-circle pt-3">
+                <img src="./dist/img/image-placeholder.png" style="width: 150px; height: 150px; border-radius: 50%;" alt="Logo" class="mb-2 mt-3">
                 <h1>Infirmary Scheduling System</h1>
             </div>
             <div class="card-body">

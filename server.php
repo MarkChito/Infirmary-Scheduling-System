@@ -149,16 +149,22 @@ if (isset($_POST["student_login"])) {
     $rows = 0;
 
     while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $db_user_id = $row["account_id"];
+        $db_name = $row["name"];
         $db_password = $row["password"];
+        $db_user_type = $row["user_type"];
 
         $rows++;
     }
 
     if ($rows) {
         if (password_verify($password, $db_password)) {
+            $_SESSION["user_id"] = $db_user_id;
+            $_SESSION["user_type"] = $db_user_type;
+
             $_SESSION["notification"] = array(
                 "title" => "Success",
-                "text" => "Student account is valid!",
+                "text" => "Welcome, " . $db_name . "!",
                 "icon" => "success",
             );
 
