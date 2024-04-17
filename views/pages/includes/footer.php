@@ -9,6 +9,51 @@
     <aside class="control-sidebar control-sidebar-dark"></aside>
     </div>
 
+    <!-- Update Account Modal -->
+    <div class="modal fade" id="update_account_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Update Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="javascript:void(0)" id="update_account_form">
+                    <div class="modal-body">
+                        <div class="loading d-flex justify-content-center">
+                            <img src="<?= $base_url ?>dist/img/loading-2.gif" alt="Loading">
+                        </div>
+                        <div class="actual-form d-none">
+                            <div class="form-group">
+                                <label for="update_account_student_number">Student Number</label>
+                                <input type="number" class="form-control" id="update_account_student_number" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="update_account_current_password">Current Password</label>
+                                <input type="password" class="form-control" id="update_account_current_password" required>
+                                <small class="text-danger d-none" id="error_update_account_current_password">Password is incorrect</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="update_account_password">Password</label>
+                                <input type="password" class="form-control" id="update_account_password" required>
+                                <small class="text-danger d-none" id="error_update_account_password">Passwords do not match</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="update_account_confirm_password">Confirm Password</label>
+                                <input type="password" class="form-control" id="update_account_confirm_password" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="update_account_submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="<?= $base_url ?>plugins/jquery/jquery.min.js"></script>
     <script src="<?= $base_url ?>plugins/jquery-ui/jquery-ui.min.js"></script>
     <script src="<?= $base_url ?>plugins/uibutton/uibutton.js"></script>
@@ -54,7 +99,16 @@
             get_account_data(user_id);
 
             if (user_type == "student") {
-                get_student_data(user_id);
+                if (current_tab == "profile") {
+                    get_profile_data(user_id);
+                }
+
+                if (current_tab == "dashboard") {
+                    get_student_data(user_id);
+                    get_todays_schedule(user_id);
+                    get_pending_schedule(user_id);
+                    get_exprired_schedules(user_id);
+                }
             }
 
             if (notification) {
@@ -108,52 +162,301 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        const schedule_id = response.id;
-                        const day = response.day;
-                        const start_time = response.start_time;
-                        const end_time = response.end_time;
+                        if (response) {
+                            const schedule_id = response.id;
 
-                        Swal.fire({
-                            title: "Schedule is Available",
-                            html: `Your Schedule: <b>` + day + `, ` + convert_time(start_time) + ` - ` + convert_time(end_time) + `</b>.`,
-                            icon: "info",
-                            showCancelButton: true,
-                            confirmButtonColor: "#3085d6",
-                            cancelButtonColor: "#d33",
-                            confirmButtonText: "Confirm"
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                var formData = new FormData();
+                            Swal.fire({
+                                title: "Schedule is Available",
+                                html: `Your Schedule: <b>` + response.day + `, ` + convert_time(response.start_time) + ` - ` + convert_time(response.end_time) + `</b>.`,
+                                icon: "info",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Confirm"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    var formData = new FormData();
 
-                                formData.append('user_id', user_id);
-                                formData.append('day', day);
-                                formData.append('schedule_id', schedule_id);
-                                formData.append('start_time', start_time);
-                                formData.append('end_time', end_time);
-                                formData.append('add_appointment', true);
+                                    formData.append('user_id', user_id);
+                                    formData.append('schedule_id', schedule_id);
+                                    formData.append('add_appointment', true);
 
-                                $.ajax({
-                                    url: 'server.php',
-                                    data: formData,
-                                    type: 'POST',
-                                    dataType: 'JSON',
-                                    processData: false,
-                                    contentType: false,
-                                    success: function(response) {
-                                        location.href = base_url + "dashboard";
-                                    },
-                                    error: function(_, _, error) {
-                                        console.error(error);
-                                    }
-                                });
-                            }
-                        });
+                                    $.ajax({
+                                        url: 'server.php',
+                                        data: formData,
+                                        type: 'POST',
+                                        dataType: 'JSON',
+                                        processData: false,
+                                        contentType: false,
+                                        success: function(response) {
+                                            location.href = base_url + "dashboard";
+                                        },
+                                        error: function(_, _, error) {
+                                            console.error(error);
+                                        }
+                                    });
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Schedule is not available",
+                                text: "There are no available schedules for tommorow. Please come again later.",
+                                icon: "error"
+                            });
+                        }
                     },
                     error: function(_, _, error) {
                         console.error(error);
                     }
                 });
             })
+
+            $("#update_profile_form").submit(function() {
+                const student_number = $("#update_profile_student_number").val();
+                const name = $("#update_profile_name").val();
+                const email = $("#update_profile_email").val();
+                const mobile_number = $("#update_profile_mobile_number").val();
+                const school_branch = $("#update_profile_school_branch").val();
+                const program = $("#update_profile_program").val();
+                const year_level = $("#update_profile_year_level").val();
+
+                const old_student_number = $("#old_update_profile_student_number").val();
+
+                let errors = 0;
+
+                if (error_student_number(student_number)) {
+                    $("#error_update_profile_student_number").text(error_student_number(student_number));
+                    $("#error_update_profile_student_number").removeClass("d-none");
+                    $("#update_profile_student_number").addClass("is-invalid");
+
+                    errors++;
+                }
+
+                if (error_mobile_number(mobile_number)) {
+                    $("#error_update_profile_mobile_number").text(error_mobile_number(mobile_number));
+                    $("#error_update_profile_mobile_number").removeClass("d-none");
+                    $("#update_profile_mobile_number").addClass("is-invalid");
+
+                    errors++;
+                }
+
+                if (errors == 0) {
+                    $("#update_profile_submit").text("Please wait...");
+                    $("#update_profile_submit").attr("disabled", true);
+
+                    var formData = new FormData();
+
+                    formData.append('student_number', student_number);
+                    formData.append('name', name);
+                    formData.append('email', email);
+                    formData.append('mobile_number', mobile_number);
+                    formData.append('school_branch', school_branch);
+                    formData.append('program', program);
+                    formData.append('year_level', year_level);
+                    formData.append('old_student_number', old_student_number);
+
+                    formData.append('update_profile', true);
+
+                    $.ajax({
+                        url: 'server.php',
+                        data: formData,
+                        type: 'POST',
+                        dataType: 'JSON',
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            if (response) {
+                                location.href = base_url + "profile";
+                            } else {
+                                $("#error_update_profile_student_number").text("Student Number is already in use");
+                                $("#error_update_profile_student_number").removeClass("d-none");
+                                $("#update_profile_student_number").addClass("is-invalid");
+
+                                $("#update_profile_submit").removeAttr("disabled");
+                                $("#update_profile_submit").text("Update Profile");
+                            }
+                        },
+                        error: function(_, _, error) {
+                            console.error(error);
+                        }
+                    });
+                }
+            })
+
+            $("#update_profile_mobile_number").keydown(function() {
+                $("#error_update_profile_mobile_number").addClass("d-none");
+                $("#update_profile_mobile_number").removeClass("is-invalid");
+            })
+
+            $("#update_profile_student_number").keydown(function() {
+                $("#error_update_profile_student_number").addClass("d-none");
+                $("#update_profile_student_number").removeClass("is-invalid");
+            })
+
+            $(".account_settings").click(function() {
+                $(".loading").removeClass("d-none");
+                $(".loading").addClass("d-flex");
+                $(".actual-form").addClass("d-none");
+
+                $("#update_account_modal").modal("show");
+
+                var formData = new FormData();
+
+                formData.append('user_id', user_id);
+                formData.append('get_user_data', true);
+
+                $.ajax({
+                    url: 'server.php',
+                    data: formData,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $("#update_account_student_number").val(response.student_number);
+
+                        $(".loading").addClass("d-none");
+                        $(".loading").removeClass("d-flex");
+                        $(".actual-form").removeClass("d-none");
+                    },
+                    error: function(_, _, error) {
+                        console.error(error);
+                    }
+                });
+            })
+
+            $("#update_account_form").submit(function() {
+                const student_number = $("#update_account_student_number").val();
+                const current_password = $("#update_account_current_password").val();
+                const password = $("#update_account_password").val();
+                const confirm_password = $("#update_account_confirm_password").val();
+
+                if (error_password(password, confirm_password)) {
+                    $("#error_update_account_password").text(error_password(password, confirm_password));
+                    $("#error_update_account_password").removeClass("d-none");
+                    $("#update_account_password").addClass("is-invalid");
+                    $("#update_account_confirm_password").addClass("is-invalid");
+                } else {
+                    $("#update_account_submit").text("Please wait...");
+                    $("#update_account_submit").attr("disabled", true);
+
+                    var formData = new FormData();
+
+                    formData.append('student_number', student_number);
+                    formData.append('current_password', current_password);
+                    formData.append('password', password);
+                    formData.append('update_account', true);
+
+                    $.ajax({
+                        url: 'server.php',
+                        data: formData,
+                        type: 'POST',
+                        dataType: 'JSON',
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            if (response) {
+                                location.href = base_url + current_tab;
+                            } else {
+                                $("#error_update_account_current_password").removeClass("d-none");
+                                $("#update_account_current_password").addClass("is-invalid");
+
+                                $("#update_account_submit").removeAttr("disabled");
+                                $("#update_account_submit").text("Submit");
+                            }
+                        },
+                        error: function(_, _, error) {
+                            console.error(error);
+                        }
+                    });
+                }
+            })
+
+            $("#update_account_password").keydown(function() {
+                $("#error_update_account_password").addClass("d-none");
+                $("#update_account_password").removeClass("is-invalid");
+                $("#update_account_confirm_password").removeClass("is-invalid");
+            })
+
+            $("#update_account_confirm_password").keydown(function() {
+                $("#error_update_account_password").addClass("d-none");
+                $("#update_account_password").removeClass("is-invalid");
+                $("#update_account_confirm_password").removeClass("is-invalid");
+            })
+
+            $("#update_account_current_password").keydown(function() {
+                $("#error_update_account_current_password").addClass("d-none");
+                $("#update_account_current_password").removeClass("is-invalid");
+            })
+
+            $(document).on("click", ".cancel_request", function() {
+                const schedule_id = $(this).attr("schedule_id");
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You are going to cancel this request!",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Confirm"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var formData = new FormData();
+
+                        formData.append('user_id', user_id);
+                        formData.append('schedule_id', schedule_id);
+                        formData.append('cancel_request', true);
+
+                        $.ajax({
+                            url: 'server.php',
+                            data: formData,
+                            type: 'POST',
+                            dataType: 'JSON',
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                location.href = base_url + "appointments";
+                            },
+                            error: function(_, _, error) {
+                                console.error(error);
+                            }
+                        });
+                    }
+                });
+            })
+
+            function get_todays_schedule(user_id) {
+
+            }
+
+            function get_pending_schedule(user_id) {
+                var formData = new FormData();
+
+                formData.append('user_id', user_id);
+                formData.append('get_pending_schedule', true);
+
+                $.ajax({
+                    url: 'server.php',
+                    data: formData,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response) {
+                            $("#dashboard_pending_schedule").text(convert_time(response.start_time) + " - " + convert_time(response.end_time));
+                        }
+                    },
+                    error: function(_, _, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
+            function get_exprired_schedules(user_id) {
+
+            }
 
             function convert_time(timeString) {
                 const [hours, minutes] = timeString.split(":");
@@ -194,6 +497,43 @@
                 });
             }
 
+            function get_profile_data(user_id) {
+                var formData = new FormData();
+
+                formData.append('user_id', user_id);
+                formData.append('get_profile_data', true);
+
+                $.ajax({
+                    url: 'server.php',
+                    data: formData,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $("#profile_name").text(response.name);
+                        $("#profile_program_year_level").text(response.program + " " + response.year_level);
+                        $("#profile_student_number").text(response.student_number);
+                        $("#profile_school_branch").text(response.school_branch);
+                        $("#profile_email").text(response.email);
+                        $("#profile_mobile_number").text(response.mobile_number);
+
+                        $("#update_profile_student_number").val(response.student_number);
+                        $("#update_profile_name").val(response.name);
+                        $("#update_profile_email").val(response.email);
+                        $("#update_profile_mobile_number").val(response.mobile_number);
+                        $("#update_profile_school_branch").val(response.school_branch);
+                        $("#update_profile_program").val(response.program);
+                        $("#update_profile_year_level").val(response.year_level);
+
+                        $("#old_update_profile_student_number").val(response.student_number);
+                    },
+                    error: function(_, _, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
             function get_student_data(user_id) {
                 var formData = new FormData();
 
@@ -210,8 +550,10 @@
                     success: function(response) {
                         $("#dashboard_student_number").text(response.student_number);
                         $("#dashboard_name").text(response.name);
-                        $("#dashboard_program").text(response.program);
-                        $("#dashboard_year_level").text(response.year_level);
+                        $("#dashboard_program_year_level").text(response.program + " " + response.year_level);
+                        $("#dashboard_school_branch").text(response.school_branch);
+                        $("#dashboard_email").text(response.email);
+                        $("#dashboard_mobile_number").text(response.mobile_number);
                     },
                     error: function(_, _, error) {
                         console.error(error);
@@ -253,6 +595,36 @@
                     text: notification.text,
                     icon: notification.icon
                 });
+            }
+
+            function error_student_number(student_number) {
+                if (student_number.length != 7) {
+                    return "Student Number must be 7 digits long";
+                } else {
+                    return false;
+                }
+            }
+
+            function error_mobile_number(mobile_number) {
+                var pattern = /^09/;
+
+                if (mobile_number.length != 11) {
+                    return "Mobile Number must be 11 digits long";
+                } else if (!pattern.test(mobile_number)) {
+                    return "Mobile Number must start with 09";
+                } else {
+                    return false;
+                }
+            }
+
+            function error_password(password, confirm_password) {
+                if (password != confirm_password) {
+                    return "Passwords do not match";
+                } else if (password.length < 8) {
+                    return "Password must be at least 8 digits long";
+                } else {
+                    return false;
+                }
             }
         })
     </script>

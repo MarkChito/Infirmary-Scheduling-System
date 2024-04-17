@@ -16,12 +16,10 @@ if (empty($env_data)) {
     $version = $env_data["VERSION"];
     $base_url = $env_data["BASE_URL"];
 
-    $_SESSION["current_tab"] = "dashboard";
-
     if (isset($_SESSION["user_id"]) && $_SESSION["user_type"] == "student") {
-        include "./views/pages/student/dashboard_view.php";
-    } else if (isset($_SESSION["user_id"]) && $_SESSION["user_type"] == "admin") {
-        include "./views/pages/admin/dashboard_view.php";
+        $_SESSION["current_tab"] = "profile";
+
+        include "./views/pages/student/profile_view.php";
     } else {
         $_SESSION["notification"] = array(
             "title" => "Oops..",

@@ -18,6 +18,7 @@ GO
 -- Create the Table tbl_students
 CREATE TABLE tbl_students (
     id INT PRIMARY KEY IDENTITY(1, 1),
+    student_id INT,
     student_number VARCHAR(7),
     name VARCHAR(30),
     email VARCHAR(30),
@@ -31,10 +32,8 @@ CREATE TABLE tbl_students (
 CREATE TABLE tbl_appointments (
     id INT PRIMARY KEY IDENTITY(1, 1),
     student_id INT,
-    day VARCHAR(9),
-    start_time VARCHAR(19),
-    end_time VARCHAR(19),
-    status VARCHAR(8),
+    schedule_id INT,
+    status VARCHAR(9),
 );
 
 -- Create the Table tbl_available_schedules
@@ -84,6 +83,7 @@ VALUES
 
 INSERT INTO
     tbl_students (
+        student_id,
         student_number,
         name,
         email,
@@ -94,6 +94,7 @@ INSERT INTO
     )
 VALUES
     (
+        2,
         '1234567',
         'Juan Dela Cruz',
         'juan_dc@gmail.com',

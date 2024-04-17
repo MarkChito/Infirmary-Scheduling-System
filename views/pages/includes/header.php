@@ -2,7 +2,6 @@
 $current_tab = $_SESSION["current_tab"];
 $user_id = $_SESSION["user_id"];
 $user_type = $_SESSION["user_type"];
-$conn = $_SESSION["conn"];
 
 switch ($current_tab) {
     case "dashboard":
@@ -13,11 +12,6 @@ switch ($current_tab) {
         $title = "My Profile";
 
         break;
-    case "account":
-        $title = "Account Settings";
-
-        break;
-
     case "appointments":
         $title = "My Appointments";
 
@@ -77,6 +71,11 @@ switch ($current_tab) {
                     </div>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link account_settings" href="javascript:void(0)" role="button">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-danger logout" href="javascript:void(0)" role="button">
                         <i class="fas fa-sign-out-alt"></i>
                     </a>
@@ -117,12 +116,6 @@ switch ($current_tab) {
                                 </a>
                             </li>
                         <?php endif ?>
-                        <li class="nav-item">
-                            <a href="<?= $base_url ?>account" class="nav-link <?= $_SESSION["current_tab"] == "account" ? "active" : null ?>">
-                                <i class="nav-icon fas fa-cog"></i>
-                                <p>Account Settings</p>
-                            </a>
-                        </li>
                         <li class="nav-item">
                             <a href="javascript:void(0)" class="nav-link logout">
                                 <i class="nav-icon fas fa-sign-out-alt"></i>
