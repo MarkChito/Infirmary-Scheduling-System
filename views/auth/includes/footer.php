@@ -30,6 +30,7 @@
                                 <div class="form-group">
                                     <label for="register_email">Email</label>
                                     <input type="email" class="form-control" id="register_email" required>
+                                    <small class="text-danger d-none" id="error_register_email">Email is already in use</small>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -41,7 +42,15 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="register_program">Program</label>
+                                    <input type="text" class="form-control" id="register_program" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="register_school_branch">School Branch</label>
                                     <select id="register_school_branch" class="custom-select" required>
@@ -51,17 +60,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="register_program">Program</label>
-                                    <select id="register_program" class="custom-select" required>
-                                        <option value="" selected disabled>-- Choose --</option>
-                                        <option value="BSCS">BSCS</option>
-                                        <option value="BSIT">BSIT</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="register_year_level">Year Level</label>
                                     <select id="register_year_level" class="custom-select" required>
@@ -99,9 +98,9 @@
         </div>
     </div>
 
-    <script src="<?= $base_url ?>plugins/jquery/jquery.min.js?v=<?= $version ?>"></script>
-    <script src="<?= $base_url ?>plugins/bootstrap/js/bootstrap.bundle.min.js?v=<?= $version ?>"></script>
-    <script src="<?= $base_url ?>dist/js/adminlte.min.js?v=<?= $version ?>"></script>
+    <script src="<?= $base_url ?>plugins/jquery/jquery.min.js"></script>
+    <script src="<?= $base_url ?>plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= $base_url ?>dist/js/adminlte.min.js"></script>
     <script src="<?= $base_url ?>plugins/sweetalert2/sweetalert2.min.js"></script>
 
     <script>
@@ -109,8 +108,11 @@
             const base_url = "<?= $base_url ?>";
             const notification = <?= isset($_SESSION["notification"]) ? json_encode($_SESSION["notification"]) : json_encode(null) ?>;
 
+            $("#div_alert_message").removeClass("alert-success");
+            $("#div_alert_message").removeClass("alert-danger");
+
             if (notification) {
-                sweetalert(notification);
+                alert_message(notification);
             }
 
             disable_developer_functions(true);
@@ -234,7 +236,8 @@
                     var formData = new FormData();
 
                     formData.append('student_number', student_number);
-                    formData.append('check_student_number', true);
+                    formData.append('email', email);
+                    formData.append('validate_student_number_and_email', true);
 
                     $.ajax({
                         url: 'server.php',
@@ -244,7 +247,7 @@
                         processData: false,
                         contentType: false,
                         success: function(response) {
-                            if (response) {
+                            if (!response) {
                                 var formData = new FormData();
 
                                 formData.append('student_number', student_number);
@@ -275,9 +278,20 @@
                                     }
                                 });
                             } else {
-                                $("#error_register_student_number").text("Student Number is already in use");
-                                $("#error_register_student_number").removeClass("d-none");
-                                $("#register_student_number").addClass("is-invalid");
+                                const student_number_error = response.student_number_error;
+                                const email_error = response.email_error;
+
+                                if (student_number_error) {
+                                    $("#error_register_student_number").text(student_number_error);
+                                    $("#error_register_student_number").removeClass("d-none");
+                                    $("#register_student_number").addClass("is-invalid");
+                                }
+
+                                if (email_error) {
+                                    $("#error_register_email").text(email_error);
+                                    $("#error_register_email").removeClass("d-none");
+                                    $("#register_email").addClass("is-invalid");
+                                }
 
                                 $("#register_submit").removeAttr("disabled");
                                 $("#register_submit").text("Submit");
@@ -293,6 +307,11 @@
             $("#register_student_number").keydown(function() {
                 $("#register_student_number").removeClass("is-invalid");
                 $("#error_register_student_number").addClass("d-none");
+            })
+
+            $("#register_email").keydown(function() {
+                $("#register_email").removeClass("is-invalid");
+                $("#error_register_email").addClass("d-none");
             })
 
             $("#register_mobile_number").keydown(function() {
@@ -408,12 +427,37 @@
                 }
             }
 
-            function sweetalert(notification) {
-                Swal.fire({
-                    title: notification.title,
-                    text: notification.text,
-                    icon: notification.icon
-                });
+            function alert_message(notification) {
+                const title = notification.title;
+                const text = notification.text;
+                const icon = notification.icon;
+
+                var alert_color = null;
+
+                switch (icon) {
+                    case "success":
+                        alert_color = "alert-success";
+
+                        break;
+                    case "error":
+                        alert_color = "alert-danger";
+
+                        break;
+                    case "warning":
+                        alert_color = "alert-warning";
+
+                        break;
+                    default:
+                        // Pass
+                }
+
+                $("#div_alert_message").removeClass("d-none");
+                $("#div_alert_message").addClass(alert_color + " show");
+                $("#span_alert_message").text(text);
+
+                setTimeout(function() {
+                    $('#div_alert_message').alert('close');
+                }, 3000);
             }
 
             function disable_developer_functions(enabled) {

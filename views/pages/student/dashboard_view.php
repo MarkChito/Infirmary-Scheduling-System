@@ -70,14 +70,17 @@
 
                             <h3 class="profile-username text-center" id="dashboard_name">Loading...</h3>
 
-                            <p class="text-muted text-center" id="dashboard_program_year_level">Loading...</p>
+                            <p class="text-muted text-center" id="dashboard_student_number">Loading...</p>
 
                             <ul class="list-group list-group-unbordered mb-3">
                                 <li class="list-group-item">
-                                    <b>Student Number</b> <a class="float-right" id="dashboard_student_number">Loading...</a>
+                                    <b>School Branch</b> <a class="float-right" id="dashboard_school_branch">Loading...</a>
                                 </li>
                                 <li class="list-group-item">
-                                    <b>School Branch</b> <a class="float-right" id="dashboard_school_branch">Loading...</a>
+                                    <b>Program</b> <a class="float-right" id="dashboard_program">Loading...</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Year Level</b> <a class="float-right" id="dashboard_year_level">Loading...</a>
                                 </li>
                                 <li class="list-group-item">
                                     <b>Email</b> <a class="float-right" id="dashboard_email">Loading...</a>

@@ -30,12 +30,12 @@ switch ($current_tab) {
 
     <link rel="shortcut icon" href="<?= $base_url ?>dist/img/image-placeholder.png" type="image/x-icon">
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback&v=<?= $version ?>">
-    <link rel="stylesheet" href="<?= $base_url ?>plugins/fontawesome-free/css/all.min.css?v=<?= $version ?>">
-    <link rel="stylesheet" href="<?= $base_url ?>plugins/icheck-bootstrap/icheck-bootstrap.min.css?v=<?= $version ?>">
-    <link rel="stylesheet" href="<?= $base_url ?>dist/css/adminlte.min.css?v=<?= $version ?>">
-    <link rel="stylesheet" href="<?= $base_url ?>plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css?v=<?= $version ?>">
-    <link rel="stylesheet" href="<?= $base_url ?>dist/css/style.css?v=<?= $version ?>">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="<?= $base_url ?>plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="<?= $base_url ?>plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <link rel="stylesheet" href="<?= $base_url ?>dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="<?= $base_url ?>plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <link rel="stylesheet" href="<?= $base_url ?>dist/css/style.css">
 </head>
 
 <body>

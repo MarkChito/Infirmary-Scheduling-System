@@ -29,14 +29,17 @@
 
                             <h3 class="profile-username text-center" id="profile_name">Loading...</h3>
 
-                            <p class="text-muted text-center" id="profile_program_year_level">Loading...</p>
+                            <p class="text-muted text-center" id="profile_student_number">Loading...</p>
 
                             <ul class="list-group list-group-unbordered mb-3">
                                 <li class="list-group-item">
-                                    <b>Student Number</b> <a class="float-right" id="profile_student_number">Loading...</a>
+                                    <b>School Branch</b> <a class="float-right" id="profile_school_branch">Loading...</a>
                                 </li>
                                 <li class="list-group-item">
-                                    <b>School Branch</b> <a class="float-right" id="profile_school_branch">Loading...</a>
+                                    <b>Program</b> <a class="float-right" id="profile_program">Loading...</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Year Level</b> <a class="float-right" id="profile_year_level">Loading...</a>
                                 </li>
                                 <li class="list-group-item">
                                     <b>Email</b> <a class="float-right" id="profile_email">Loading...</a>
@@ -58,7 +61,7 @@
                                     <div class="form-group row">
                                         <label for="update_profile_student_number" class="col-sm-2 col-form-label">Student Number</label>
                                         <div class="col-sm-10">
-                                            <input type="number" class="form-control" id="update_profile_student_number" placeholder="Student Number" required>
+                                            <input type="number" class="form-control" id="update_profile_student_number" placeholder="Student Number" readonly>
                                             <small class="text-danger d-none" id="error_update_profile_student_number">Student Number is already in use</small>
                                         </div>
                                     </div>
@@ -94,11 +97,7 @@
                                     <div class="form-group row">
                                         <label for="update_profile_program" class="col-sm-2 col-form-label">Program</label>
                                         <div class="col-sm-10">
-                                            <select id="update_profile_program" class="custom-select" required>
-                                                <option value="" selected disabled>-- Choose --</option>
-                                                <option value="BSCS">BSCS</option>
-                                                <option value="BSIT">BSIT</option>
-                                            </select>
+                                            <input type="text" class="form-control" id="update_profile_program" required>
                                         </div>
                                     </div>
                                     <div class="form-group row">

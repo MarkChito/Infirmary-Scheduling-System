@@ -2,7 +2,9 @@
 
 <div class="wrapper">
     <div class="login-form">
-        <span class="alert alert-danger text-center d-none" id="alert_message"></span>
+        <div class="alert text-center fade d-none" id="div_alert_message" role="alert">
+            <span id="span_alert_message"></span>
+        </div>
 
         <div class="card bg-gray" style="width: 500px;">
             <div class="card-header text-center">

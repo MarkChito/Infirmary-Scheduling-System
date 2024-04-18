@@ -82,7 +82,7 @@
     <script src="<?= $base_url ?>plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="<?= $base_url ?>plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <script src="<?= $base_url ?>dist/js/adminlte.js"></script>
-
+    
     <script>
         jQuery(document).ready(function() {
             const base_url = "<?= $base_url ?>";
@@ -123,7 +123,7 @@
                 "info": true,
                 "autoWidth": false,
                 "responsive": true,
-            });
+            })
 
             $(".logout").click(function() {
                 var formData = new FormData();
@@ -512,7 +512,8 @@
                     contentType: false,
                     success: function(response) {
                         $("#profile_name").text(response.name);
-                        $("#profile_program_year_level").text(response.program + " " + response.year_level);
+                        $("#profile_program").text(response.program);
+                        $("#profile_year_level").text(response.year_level);
                         $("#profile_student_number").text(response.student_number);
                         $("#profile_school_branch").text(response.school_branch);
                         $("#profile_email").text(response.email);
@@ -550,7 +551,8 @@
                     success: function(response) {
                         $("#dashboard_student_number").text(response.student_number);
                         $("#dashboard_name").text(response.name);
-                        $("#dashboard_program_year_level").text(response.program + " " + response.year_level);
+                        $("#dashboard_program").text(response.program);
+                        $("#dashboard_year_level").text(response.year_level);
                         $("#dashboard_school_branch").text(response.school_branch);
                         $("#dashboard_email").text(response.email);
                         $("#dashboard_mobile_number").text(response.mobile_number);
@@ -591,9 +593,11 @@
 
             function sweetalert(notification) {
                 Swal.fire({
-                    title: notification.title,
-                    text: notification.text,
-                    icon: notification.icon
+                    position: "top-end",
+                    icon: notification.icon,
+                    title: notification.text,
+                    showConfirmButton: false,
+                    timer: 1500
                 });
             }
 
