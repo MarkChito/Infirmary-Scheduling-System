@@ -82,7 +82,7 @@
     <script src="<?= $base_url ?>plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="<?= $base_url ?>plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <script src="<?= $base_url ?>dist/js/adminlte.js"></script>
-    
+
     <script>
         jQuery(document).ready(function() {
             const base_url = "<?= $base_url ?>";
@@ -99,15 +99,12 @@
             get_account_data(user_id);
 
             if (user_type == "student") {
-                if (current_tab == "profile") {
-                    get_profile_data(user_id);
-                }
-
                 if (current_tab == "dashboard") {
                     get_student_data(user_id);
-                    get_todays_schedule(user_id);
-                    get_pending_schedule(user_id);
-                    get_exprired_schedules(user_id);
+                }
+
+                if (current_tab == "profile") {
+                    get_profile_data(user_id);
                 }
             }
 
@@ -146,74 +143,11 @@
                 });
             })
 
-            $("#generate_schedule").click(function() {
-                var day = days[dayOfWeek + 1];
-
-                var formData = new FormData();
-
-                formData.append('day', day);
-                formData.append('get_schedule', true);
-
-                $.ajax({
-                    url: 'server.php',
-                    data: formData,
-                    type: 'POST',
-                    dataType: 'JSON',
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        if (response) {
-                            const schedule_id = response.id;
-
-                            Swal.fire({
-                                title: "Schedule is Available",
-                                html: `Your Schedule: <b>` + response.day + `, ` + convert_time(response.start_time) + ` - ` + convert_time(response.end_time) + `</b>.`,
-                                icon: "info",
-                                showCancelButton: true,
-                                confirmButtonColor: "#3085d6",
-                                cancelButtonColor: "#d33",
-                                confirmButtonText: "Confirm"
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    var formData = new FormData();
-
-                                    formData.append('user_id', user_id);
-                                    formData.append('schedule_id', schedule_id);
-                                    formData.append('add_appointment', true);
-
-                                    $.ajax({
-                                        url: 'server.php',
-                                        data: formData,
-                                        type: 'POST',
-                                        dataType: 'JSON',
-                                        processData: false,
-                                        contentType: false,
-                                        success: function(response) {
-                                            location.href = base_url + "dashboard";
-                                        },
-                                        error: function(_, _, error) {
-                                            console.error(error);
-                                        }
-                                    });
-                                }
-                            });
-                        } else {
-                            Swal.fire({
-                                title: "Schedule is not available",
-                                text: "There are no available schedules for tommorow. Please come again later.",
-                                icon: "error"
-                            });
-                        }
-                    },
-                    error: function(_, _, error) {
-                        console.error(error);
-                    }
-                });
-            })
-
             $("#update_profile_form").submit(function() {
                 const student_number = $("#update_profile_student_number").val();
-                const name = $("#update_profile_name").val();
+                const first_name = $("#update_profile_first_name").val();
+                const middle_name = $("#update_profile_middle_name").val();
+                const last_name = $("#update_profile_last_name").val();
                 const email = $("#update_profile_email").val();
                 const mobile_number = $("#update_profile_mobile_number").val();
                 const school_branch = $("#update_profile_school_branch").val();
@@ -221,6 +155,14 @@
                 const year_level = $("#update_profile_year_level").val();
 
                 const old_student_number = $("#old_update_profile_student_number").val();
+
+                let name = first_name + " " + last_name;
+
+                if (middle_name) {
+                    const middle_initial = middle_name.trim().charAt(0).toUpperCase() + ".";
+
+                    name = first_name + " " + middle_initial + " " + last_name;
+                }
 
                 let errors = 0;
 
@@ -247,6 +189,9 @@
                     var formData = new FormData();
 
                     formData.append('student_number', student_number);
+                    formData.append('first_name', first_name);
+                    formData.append('middle_name', middle_name);
+                    formData.append('last_name', last_name);
                     formData.append('name', name);
                     formData.append('email', email);
                     formData.append('mobile_number', mobile_number);
@@ -345,6 +290,7 @@
                     formData.append('student_number', student_number);
                     formData.append('current_password', current_password);
                     formData.append('password', password);
+                    
                     formData.append('update_account', true);
 
                     $.ajax({
@@ -389,75 +335,6 @@
                 $("#update_account_current_password").removeClass("is-invalid");
             })
 
-            $(document).on("click", ".cancel_request", function() {
-                const schedule_id = $(this).attr("schedule_id");
-
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "You are going to cancel this request!",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Confirm"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        var formData = new FormData();
-
-                        formData.append('user_id', user_id);
-                        formData.append('schedule_id', schedule_id);
-                        formData.append('cancel_request', true);
-
-                        $.ajax({
-                            url: 'server.php',
-                            data: formData,
-                            type: 'POST',
-                            dataType: 'JSON',
-                            processData: false,
-                            contentType: false,
-                            success: function(response) {
-                                location.href = base_url + "appointments";
-                            },
-                            error: function(_, _, error) {
-                                console.error(error);
-                            }
-                        });
-                    }
-                });
-            })
-
-            function get_todays_schedule(user_id) {
-
-            }
-
-            function get_pending_schedule(user_id) {
-                var formData = new FormData();
-
-                formData.append('user_id', user_id);
-                formData.append('get_pending_schedule', true);
-
-                $.ajax({
-                    url: 'server.php',
-                    data: formData,
-                    type: 'POST',
-                    dataType: 'JSON',
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        if (response) {
-                            $("#dashboard_pending_schedule").text(convert_time(response.start_time) + " - " + convert_time(response.end_time));
-                        }
-                    },
-                    error: function(_, _, error) {
-                        console.error(error);
-                    }
-                });
-            }
-
-            function get_exprired_schedules(user_id) {
-
-            }
-
             function convert_time(timeString) {
                 const [hours, minutes] = timeString.split(":");
                 const hour = parseInt(hours);
@@ -489,7 +366,15 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        $("#user_name").text(response.name);
+                        let name = response.first_name + " " + response.last_name;
+
+                        if (response.middle_name) {
+                            const middle_initial = response.middle_name.trim().charAt(0).toUpperCase() + ".";
+
+                            name = response.first_name + " " + middle_initial + " " + response.last_name;
+                        }
+
+                        $("#user_name").text(name);
                     },
                     error: function(_, _, error) {
                         console.error(error);
@@ -511,7 +396,15 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        $("#profile_name").text(response.name);
+                        let name = response.first_name + " " + response.last_name;
+
+                        if (response.middle_name) {
+                            const middle_initial = response.middle_name.trim().charAt(0).toUpperCase() + ".";
+
+                            name = response.first_name + " " + middle_initial + " " + response.last_name;
+                        }
+
+                        $("#profile_name").text(name);
                         $("#profile_program").text(response.program);
                         $("#profile_year_level").text(response.year_level);
                         $("#profile_student_number").text(response.student_number);
@@ -520,7 +413,9 @@
                         $("#profile_mobile_number").text(response.mobile_number);
 
                         $("#update_profile_student_number").val(response.student_number);
-                        $("#update_profile_name").val(response.name);
+                        $("#update_profile_first_name").val(response.first_name);
+                        $("#update_profile_middle_name").val(response.middle_name);
+                        $("#update_profile_last_name").val(response.last_name);
                         $("#update_profile_email").val(response.email);
                         $("#update_profile_mobile_number").val(response.mobile_number);
                         $("#update_profile_school_branch").val(response.school_branch);
@@ -549,8 +444,16 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
+                        let name = response.first_name + " " + response.last_name;
+
+                        if (response.middle_name) {
+                            const middle_initial = response.middle_name.trim().charAt(0).toUpperCase() + ".";
+
+                            name = response.first_name + " " + middle_initial + " " + response.last_name;
+                        }
+
                         $("#dashboard_student_number").text(response.student_number);
-                        $("#dashboard_name").text(response.name);
+                        $("#dashboard_name").text(name);
                         $("#dashboard_program").text(response.program);
                         $("#dashboard_year_level").text(response.year_level);
                         $("#dashboard_school_branch").text(response.school_branch);

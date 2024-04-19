@@ -10,7 +10,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 $env_data = readFromEnvFile();
 
-$php_mailer = new EMail("Infirmary Scheduling System", "phpmailer.00001@gmail.com", "vhmfoycjdqbnqeqq");
+$php_mailer = new Email("Infirmary Scheduling System", "phpmailer.00001@gmail.com", "vhmfoycjdqbnqeqq");
 
 if (!empty($env_data)) {
     $server_name = $env_data["SERVER_NAME"];
@@ -79,7 +79,7 @@ if (isset($_POST["validate_student_number_and_email"])) {
     $student_number_error = null;
     $email_error = null;
 
-    $sql_1 = "SELECT student_number FROM tbl_accounts WHERE student_number = '" . $student_number . "'";
+    $sql_1 = "SELECT student_number FROM tbl_students WHERE student_number = '" . $student_number . "'";
     $stmt_1 = sqlsrv_query($conn, $sql_1);
 
     if (sqlsrv_has_rows($stmt_1)) {
@@ -107,6 +107,9 @@ if (isset($_POST["validate_student_number_and_email"])) {
 
 if (isset($_POST["register"])) {
     $student_number = $_POST["student_number"];
+    $first_name = $_POST["first_name"];
+    $middle_name = isset($_POST["middle_name"]) ? $_POST["middle_name"] : null;
+    $last_name = $_POST["last_name"];
     $name = $_POST["name"];
     $email = $_POST["email"];
     $mobile_number = $_POST["mobile_number"];
@@ -469,7 +472,6 @@ if (isset($_POST["register"])) {
             "created_at" => date("Y-m-d H:i:s"),
             "created_by" => $name,
             "name" => $name,
-            "student_number" => $student_number,
             "password" => $password,
             "user_type" => "student",
             "is_verified" => 0,
@@ -478,7 +480,7 @@ if (isset($_POST["register"])) {
         $sql_1 = "INSERT INTO tbl_accounts (" . implode(", ", array_keys($account_data)) . ") VALUES ('" . implode("', '", $account_data) . "')";
         sqlsrv_query($conn, $sql_1);
 
-        $sql_2 = "SELECT id FROM tbl_accounts WHERE student_number = '" . $student_number . "'";
+        $sql_2 = "SELECT SCOPE_IDENTITY() AS id";
         $stmt_2 = sqlsrv_query($conn, $sql_2);
 
         while ($row = sqlsrv_fetch_array($stmt_2, SQLSRV_FETCH_ASSOC)) {
@@ -488,9 +490,11 @@ if (isset($_POST["register"])) {
         $student_data = array(
             "created_at" => date("Y-m-d H:i:s"),
             "created_by" => $name,
-            "student_id" => $db_user_id,
+            "account_id" => $db_user_id,
             "student_number" => $student_number,
-            "name" => $name,
+            "first_name" => $first_name,
+            "middle_name" => $middle_name,
+            "last_name" => $last_name,
             "email" => $email,
             "mobile_number" => $mobile_number,
             "school_branch" => $school_branch,
@@ -525,22 +529,24 @@ if (isset($_POST["student_login"])) {
     $student_number = $_POST["student_number"];
     $password = $_POST["password"];
 
-    $sql = "SELECT * FROM tbl_accounts WHERE student_number = '" . $student_number . "'";
-    $stmt = sqlsrv_query($conn, $sql);
+    $sql_1 = "SELECT account_id FROM tbl_students WHERE student_number = '" . $student_number . "'";
+    $stmt_1 = sqlsrv_query($conn, $sql_1);
 
-    $rows = 0;
+    if (sqlsrv_has_rows($stmt_1)) {
+        while ($row_1 = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
+            $db_user_id = $row_1["account_id"];
+        }
 
-    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $db_user_id = $row["id"];
-        $db_name = $row["name"];
-        $db_password = $row["password"];
-        $db_user_type = $row["user_type"];
-        $db_is_verified = $row["is_verified"];
+        $sql_2 = "SELECT name, password, user_type, is_verified FROM tbl_accounts WHERE id = '" . $db_user_id . "'";
+        $stmt_2 = sqlsrv_query($conn, $sql_2);
 
-        $rows++;
-    }
+        while ($row_2 = sqlsrv_fetch_array($stmt_2, SQLSRV_FETCH_ASSOC)) {
+            $db_name = $row_2["name"];
+            $db_password = $row_2["password"];
+            $db_user_type = $row_2["user_type"];
+            $db_is_verified = $row_2["is_verified"];
+        }
 
-    if ($rows) {
         if (password_verify($password, $db_password)) {
             if ($db_is_verified == "1") {
                 $_SESSION["user_id"] = $db_user_id;
@@ -639,13 +645,15 @@ if (isset($_POST["admin_login"])) {
 if (isset($_POST["get_user_data"])) {
     $user_id = $_POST["user_id"];
 
-    $sql = "SELECT * FROM tbl_accounts WHERE id = '" . $user_id . "'";
+    $sql = "SELECT student_number, first_name, middle_name, last_name FROM tbl_students WHERE account_id = '" . $user_id . "'";
     $stmt = sqlsrv_query($conn, $sql);
 
     while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         $response = array(
             "student_number" => $row["student_number"],
-            "name" => $row["name"],
+            "first_name" => $row["first_name"],
+            "middle_name" => $row["middle_name"],
+            "last_name" => $row["last_name"],
         );
     }
 
@@ -657,25 +665,20 @@ if (isset($_POST["get_user_data"])) {
 if (isset($_POST["get_student_data"])) {
     $user_id = $_POST["user_id"];
 
-    $sql_1 = "SELECT * FROM tbl_accounts WHERE id = '" . $user_id . "'";
-    $stmt_1 = sqlsrv_query($conn, $sql_1);
+    $sql = "SELECT * FROM tbl_students WHERE account_id = '" . $user_id . "'";
+    $stmt = sqlsrv_query($conn, $sql);
 
-    while ($row_1 = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
-        $student_number = $row_1["student_number"];
-    }
-
-    $sql_2 = "SELECT * FROM tbl_students WHERE student_number = '" . $student_number . "'";
-    $stmt_2 = sqlsrv_query($conn, $sql_2);
-
-    while ($row_2 = sqlsrv_fetch_array($stmt_2, SQLSRV_FETCH_ASSOC)) {
+    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         $response = array(
-            "student_number" => $row_2["student_number"],
-            "name" => $row_2["name"],
-            "email" => $row_2["email"],
-            "program" => $row_2["program"],
-            "school_branch" => $row_2["school_branch"],
-            "mobile_number" => $row_2["mobile_number"],
-            "year_level" => $row_2["year_level"],
+            "student_number" => $row["student_number"],
+            "first_name" => $row["first_name"],
+            "middle_name" => $row["middle_name"],
+            "last_name" => $row["last_name"],
+            "email" => $row["email"],
+            "program" => $row["program"],
+            "school_branch" => $row["school_branch"],
+            "mobile_number" => $row["mobile_number"],
+            "year_level" => $row["year_level"],
         );
     }
 
@@ -687,101 +690,33 @@ if (isset($_POST["get_student_data"])) {
 if (isset($_POST["get_profile_data"])) {
     $user_id = $_POST["user_id"];
 
-    $sql_1 = "SELECT * FROM tbl_accounts WHERE id = '" . $user_id . "'";
-    $stmt_1 = sqlsrv_query($conn, $sql_1);
-
-    while ($row_1 = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
-        $student_number = $row_1["student_number"];
-    }
-
-    $sql_2 = "SELECT * FROM tbl_students WHERE student_number = '" . $student_number . "'";
-    $stmt_2 = sqlsrv_query($conn, $sql_2);
-
-    while ($row_2 = sqlsrv_fetch_array($stmt_2, SQLSRV_FETCH_ASSOC)) {
-        $response = array(
-            "student_number" => $row_2["student_number"],
-            "name" => $row_2["name"],
-            "email" => $row_2["email"],
-            "program" => $row_2["program"],
-            "school_branch" => $row_2["school_branch"],
-            "mobile_number" => $row_2["mobile_number"],
-            "year_level" => $row_2["year_level"],
-        );
-    }
-
-    sqlsrv_close($conn);
-
-    echo json_encode($response);
-}
-
-if (isset($_POST["get_schedule"])) {
-    $day = $_POST["day"];
-
-    $sql = "SELECT TOP 1 * FROM tbl_available_schedules WHERE day = '" . $day . "' AND status = 'Available'";
+    $sql = "SELECT * FROM tbl_students WHERE account_id = '" . $user_id . "'";
     $stmt = sqlsrv_query($conn, $sql);
 
-    $row_count = 0;
-
-    $response = false;
-
     while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $row_count++;
-
-        if ($row_count > 0) {
-            $response = array(
-                "id" => $row["id"],
-                "day" => $row["day"],
-                "start_time" => $row["start_time"],
-                "end_time" => $row["end_time"],
-            );
-        }
+        $response = array(
+            "student_number" => $row["student_number"],
+            "first_name" => $row["first_name"],
+            "middle_name" => $row["middle_name"],
+            "last_name" => $row["last_name"],
+            "email" => $row["email"],
+            "program" => $row["program"],
+            "school_branch" => $row["school_branch"],
+            "mobile_number" => $row["mobile_number"],
+            "year_level" => $row["year_level"],
+        );
     }
 
     sqlsrv_close($conn);
 
     echo json_encode($response);
-}
-
-if (isset($_POST["add_appointment"])) {
-    $user_id = $_POST["user_id"];
-    $schedule_id = $_POST["schedule_id"];
-
-    $sql_1 = "SELECT * FROM tbl_appointments WHERE student_id = '" . $user_id . "' AND (status = 'Pending' OR status = 'Approved')";
-    $stmt_1 = sqlsrv_query($conn, $sql_1);
-
-    $row_count = 0;
-
-    while ($row = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
-        $row_count++;
-    }
-
-    if ($row_count == 0) {
-        $sql_2 = "INSERT INTO tbl_appointments (student_id, schedule_id, status) VALUES ('" . $user_id . "', '" . $schedule_id . "', 'Pending')";
-        sqlsrv_query($conn, $sql_2);
-
-        $sql_3 = "UPDATE tbl_available_schedules SET status = 'Not Available' WHERE id = '" . $schedule_id . "'";
-        sqlsrv_query($conn, $sql_3);
-
-        $_SESSION["notification"] = array(
-            "title" => "Success!",
-            "text" => "Your request has been submited. Please wait for the confirmation from the Administrator.",
-            "icon" => "success",
-        );
-    } else {
-        $_SESSION["notification"] = array(
-            "title" => "Oops...",
-            "text" => "You still have an active schedule or pending request. Please contact your Administrator for more help.",
-            "icon" => "error",
-        );
-    }
-
-    sqlsrv_close($conn);
-
-    echo json_encode(true);
 }
 
 if (isset($_POST["update_profile"])) {
     $student_number = $_POST["student_number"];
+    $first_name = $_POST["first_name"];
+    $middle_name = $_POST["middle_name"];
+    $last_name = $_POST["last_name"];
     $name = $_POST["name"];
     $email = $_POST["email"];
     $mobile_number = $_POST["mobile_number"];
@@ -794,32 +729,26 @@ if (isset($_POST["update_profile"])) {
     $errors = 0;
 
     if ($student_number != $old_student_number) {
-        $sql_1 = "SELECT * FROM tbl_accounts WHERE student_number = '" . $student_number . "'";
+        $sql_1 = "SELECT * FROM tbl_students WHERE student_number = '" . $student_number . "'";
         $stmt_1 = sqlsrv_query($conn, $sql_1);
 
-        $row_count = 0;
-
-        while ($row = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
-            $row_count++;
-        }
-
-        if ($row_count > 0) {
+        if (sqlsrv_has_rows($stmt_1)) {
             $errors++;
         }
     }
 
     if ($errors == 0) {
-        $sql_2 = "SELECT * FROM tbl_accounts WHERE student_number = '" . $old_student_number . "'";
+        $sql_2 = "SELECT account_id FROM tbl_students WHERE student_number = '" . $old_student_number . "'";
         $stmt_2 = sqlsrv_query($conn, $sql_2);
 
         while ($row = sqlsrv_fetch_array($stmt_2, SQLSRV_FETCH_ASSOC)) {
-            $db_user_id = $row["id"];
+            $db_user_id = $row["account_id"];
         }
 
-        $sql_3 = "UPDATE tbl_accounts SET student_number = '" . $student_number . "', name = '" . $name . "' WHERE id = '" . $db_user_id . "'";
+        $sql_3 = "UPDATE tbl_accounts SET name = '" . $name . "' WHERE id = '" . $db_user_id . "'";
         sqlsrv_query($conn, $sql_3);
 
-        $sql_4 = "UPDATE tbl_students SET student_number = '" . $student_number . "', name = '" . $name . "', email = '" . $email . "', mobile_number = '" . $mobile_number . "', school_branch = '" . $school_branch . "', program = '" . $program . "', year_level = '" . $year_level . "' WHERE student_id = '" . $db_user_id . "'";
+        $sql_4 = "UPDATE tbl_students SET student_number = '" . $student_number . "', first_name = '" . $first_name . "', middle_name = '" . $middle_name . "', last_name = '" . $last_name . "', email = '" . $email . "', mobile_number = '" . $mobile_number . "', school_branch = '" . $school_branch . "', program = '" . $program . "', year_level = '" . $year_level . "' WHERE account_id = '" . $db_user_id . "'";
         sqlsrv_query($conn, $sql_4);
 
         $_SESSION["notification"] = array(
@@ -843,15 +772,22 @@ if (isset($_POST["update_account"])) {
 
     $response = false;
 
-    $sql = "SELECT * FROM tbl_accounts WHERE student_number = '" . $student_number . "'";
-    $stmt = sqlsrv_query($conn, $sql);
+    $sql_1 = "SELECT account_id FROM tbl_students WHERE student_number = '" . $student_number . "'";
+    $stmt_1 = sqlsrv_query($conn, $sql_1);
 
-    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $db_password = $row["password"];
+    while ($row_1 = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
+        $db_user_id = $row_1["account_id"];
+    }
+
+    $sql_2 = "SELECT password FROM tbl_accounts WHERE id = '" . $db_user_id . "'";
+    $stmt_2 = sqlsrv_query($conn, $sql_2);
+
+    while ($row_2 = sqlsrv_fetch_array($stmt_2, SQLSRV_FETCH_ASSOC)) {
+        $db_password = $row_2["password"];
     }
 
     if (password_verify($current_password, $db_password)) {
-        $sql_2 = "UPDATE tbl_accounts SET password = '" . password_hash($password, PASSWORD_BCRYPT) . "' WHERE student_number = '" . $student_number . "'";
+        $sql_2 = "UPDATE tbl_accounts SET password = '" . password_hash($password, PASSWORD_BCRYPT) . "' WHERE id = '" . $db_user_id . "'";
         sqlsrv_query($conn, $sql_2);
 
         $response = true;
@@ -864,58 +800,6 @@ if (isset($_POST["update_account"])) {
     }
 
     sqlsrv_close($conn);
-
-    echo json_encode($response);
-}
-
-if (isset($_POST["cancel_request"])) {
-    $user_id = $_POST["user_id"];
-    $schedule_id = $_POST["schedule_id"];
-
-    $sql_1 = "UPDATE tbl_appointments SET status = 'Cancelled' WHERE student_id = '" . $user_id . "' AND schedule_id = '" . $schedule_id . "'";
-    sqlsrv_query($conn, $sql_1);
-
-    $sql_2 = "UPDATE tbl_available_schedules SET status = 'Available' WHERE id = '" . $schedule_id . "'";
-    sqlsrv_query($conn, $sql_2);
-
-    $_SESSION["notification"] = array(
-        "title" => "Success!",
-        "text" => "A schedule has been cancelled.",
-        "icon" => "success",
-    );
-
-    sqlsrv_close($conn);
-
-    echo json_encode(true);
-}
-
-if (isset($_POST["get_pending_schedule"])) {
-    $user_id = $_POST["user_id"];
-
-    $response = false;
-
-    $sql_1 = "SELECT TOP 1 * FROM tbl_appointments WHERE student_id = '" . $user_id . "' AND status = 'Pending'";
-    $stmt_1 = sqlsrv_query($conn, $sql_1);
-
-    $row_count = 0;
-
-    while ($row_1 = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
-        $db_schedule_id = $row_1["schedule_id"];
-
-        $row_count++;
-    }
-
-    if ($row_count > 0) {
-        $sql_2 = "SELECT start_time, end_time FROM tbl_available_schedules WHERE id = '" . $db_schedule_id . "'";
-        $stmt_2 = sqlsrv_query($conn, $sql_2);
-
-        while ($row_2 = sqlsrv_fetch_array($stmt_2, SQLSRV_FETCH_ASSOC)) {
-            $response = array(
-                "start_time" => $row_2["start_time"],
-                "end_time" => $row_2["end_time"],
-            );
-        }
-    }
 
     echo json_encode($response);
 }

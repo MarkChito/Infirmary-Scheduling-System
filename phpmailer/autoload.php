@@ -7,7 +7,7 @@ require 'Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-class EMail
+class Email
 {
     public $sender_name;
     public $sender_username;

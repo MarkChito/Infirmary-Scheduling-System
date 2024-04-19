@@ -13,7 +13,6 @@ GO
         created_by VARCHAR(30),
         modified_by VARCHAR(30),
         name VARCHAR(30),
-        student_number VARCHAR(7),
         username VARCHAR(30),
         password VARCHAR(255),
         user_type VARCHAR(10),
@@ -27,9 +26,11 @@ CREATE TABLE tbl_students (
     modified_at VARCHAR(19),
     created_by VARCHAR(30),
     modified_by VARCHAR(30),
-    student_id INT,
+    account_id INT,
     student_number VARCHAR(7),
-    name VARCHAR(30),
+    first_name VARCHAR(30),
+    middle_name VARCHAR(30),
+    last_name VARCHAR(30),
     email VARCHAR(30),
     program VARCHAR(50),
     school_branch VARCHAR(30),
@@ -44,7 +45,7 @@ CREATE TABLE tbl_appointments (
     modified_at VARCHAR(19),
     created_by VARCHAR(30),
     modified_by VARCHAR(30),
-    student_id INT,
+    account_id INT,
     schedule_id INT,
     status VARCHAR(9)
 );
@@ -79,7 +80,7 @@ VALUES
         'System',
         'Administrator',
         'admin',
-        '$2y$10$Oh.Ez.38f6bxHKOGMp3puOsBlmd.JkUg2bzDFBcLxZGpqY5Q0R6LG',
+        '$2y$10$Oh.Ez.38f6bxHKOGMp3puOsBlmd.JkUg2bzDFBcLxZGpqY5Q0R6LG', -- admin123
         'admin',
         1
     );
@@ -90,7 +91,6 @@ INSERT INTO
         created_at,
         created_by,
         name,
-        student_number,
         password,
         user_type,
         is_verified
@@ -100,8 +100,7 @@ VALUES
         '2024-04-19 03:15:00',
         'System',
         'Juan Dela Cruz',
-        '1234567',
-        '$2y$10$Oh.Ez.38f6bxHKOGMp3puOsBlmd.JkUg2bzDFBcLxZGpqY5Q0R6LG',
+        '$2y$10$JHGAcYt4e663UvcPtA/r1uqP0Ea0VBtfbWEjYIhIoPCbH/Qwmxy7G', -- user1234
         'student',
         1
     );
@@ -110,9 +109,10 @@ INSERT INTO
     tbl_students (
         created_at,
         created_by,
-        student_id,
+        account_id,
         student_number,
-        name,
+        first_name,
+        last_name,
         email,
         program,
         school_branch,
@@ -125,8 +125,9 @@ VALUES
         'System',
         2,
         '1234567',
-        'Juan Dela Cruz',
-        'juan_dc@gmail.com',
+        'Juan',
+        'Dela Cruz',
+        'juandc@gmail.com',
         'Bachelor of Science in Information Technology',
         'Quezon City',
         '09123456789',

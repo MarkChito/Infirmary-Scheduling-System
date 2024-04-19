@@ -10,81 +10,103 @@
                 </div>
                 <form action="javascript:void(0)" id="register_form">
                     <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register_student_number">Student Number</label>
-                                    <input type="number" class="form-control" id="register_student_number" required>
-                                    <small class="text-danger d-none" id="error_register_student_number">Invalid Student Number</small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register_name">Name</label>
-                                    <input type="text" class="form-control" id="register_name" required>
+                        <div class="page-loading d-none">
+                            <div class="loading-parent">
+                                <div class="loading-container">
+                                    <div class="loading"></div>
+                                    <div id="loading-text">Loading</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register_email">Email</label>
-                                    <input type="email" class="form-control" id="register_email" required>
-                                    <small class="text-danger d-none" id="error_register_email">Email is already in use</small>
+                        <div class="actual-form">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="register_first_name">First Name</label>
+                                        <input type="text" class="form-control" id="register_first_name" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="register_middle_name">Middle Name (Optional)</label>
+                                        <input type="text" class="form-control" id="register_middle_name">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="register_last_name">Last Name</label>
+                                        <input type="text" class="form-control" id="register_last_name" required>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register_mobile_number">Mobile Number</label>
-                                    <input type="number" class="form-control" id="register_mobile_number" required>
-                                    <small class="text-danger d-none" id="error_register_mobile_number">Invalid Mobile Number</small>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="register_student_number">Student Number</label>
+                                        <input type="number" class="form-control" id="register_student_number" required>
+                                        <small class="text-danger d-none" id="error_register_student_number">Invalid Student Number</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="register_email">Email</label>
+                                        <input type="email" class="form-control" id="register_email" required>
+                                        <small class="text-danger d-none" id="error_register_email">Email is already in use</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="register_mobile_number">Mobile Number</label>
+                                        <input type="number" class="form-control" id="register_mobile_number" required>
+                                        <small class="text-danger d-none" id="error_register_mobile_number">Invalid Mobile Number</small>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="register_program">Program</label>
-                                    <input type="text" class="form-control" id="register_program" required>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="register_program">Program</label>
+                                        <input type="text" class="form-control" id="register_program" required>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register_school_branch">School Branch</label>
-                                    <select id="register_school_branch" class="custom-select" required>
-                                        <option value="" selected disabled>-- Choose --</option>
-                                        <option value="Manila">Manila</option>
-                                        <option value="Quezon City">Quezon City</option>
-                                    </select>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="register_school_branch">School Branch</label>
+                                        <select id="register_school_branch" class="custom-select" required>
+                                            <option value="" selected disabled>-- Choose --</option>
+                                            <option value="Manila">Manila</option>
+                                            <option value="Quezon City">Quezon City</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="register_year_level">Year Level</label>
+                                        <select id="register_year_level" class="custom-select" required>
+                                            <option value="" selected disabled>-- Choose --</option>
+                                            <option value="1st Year">1st Year</option>
+                                            <option value="2nd Year">2nd Year</option>
+                                            <option value="3rd Year">3rd Year</option>
+                                            <option value="4th Year">4th Year</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register_year_level">Year Level</label>
-                                    <select id="register_year_level" class="custom-select" required>
-                                        <option value="" selected disabled>-- Choose --</option>
-                                        <option value="1st Year">1st Year</option>
-                                        <option value="2nd Year">2nd Year</option>
-                                        <option value="3rd Year">3rd Year</option>
-                                        <option value="4th Year">4th Year</option>
-                                    </select>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="register_password">Password</label>
+                                        <input type="password" class="form-control" id="register_password" required>
+                                        <small class="text-danger d-none" id="error_register_password">Passwords do not match</small>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register_password">Password</label>
-                                    <input type="password" class="form-control" id="register_password" required>
-                                    <small class="text-danger d-none" id="error_register_password">Passwords do not match</small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="register_confirm_password">Confirm Password</label>
-                                    <input type="password" class="form-control" id="register_confirm_password" required>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="register_confirm_password">Confirm Password</label>
+                                        <input type="password" class="form-control" id="register_confirm_password" required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -115,7 +137,7 @@
                 alert_message(notification);
             }
 
-            disable_developer_functions(true);
+            disable_developer_functions(false);
 
             $("#initial_configurations_form").submit(function() {
                 const server_name = $("#initial_configurations_server_name").val();
@@ -192,7 +214,9 @@
 
             $("#register_form").submit(function() {
                 const student_number = $("#register_student_number").val();
-                const name = $("#register_name").val();
+                const first_name = $("#register_first_name").val();
+                const middle_name = $("#register_middle_name").val();
+                const last_name = $("#register_last_name").val();
                 const email = $("#register_email").val();
                 const mobile_number = $("#register_mobile_number").val();
                 const school_branch = $("#register_school_branch").val();
@@ -200,6 +224,14 @@
                 const year_level = $("#register_year_level").val();
                 const password = $("#register_password").val();
                 const confirm_password = $("#register_confirm_password").val();
+
+                let name = first_name + " " + last_name;
+
+                if (middle_name) {
+                    const middle_initial = middle_name.trim().charAt(0).toUpperCase() + ".";
+
+                    name = first_name + " " + middle_initial + " " + last_name;
+                }
 
                 var errors = 0;
 
@@ -230,6 +262,13 @@
                 }
 
                 if (errors == 0) {
+                    let actual_form_height = $(".actual-form").height();
+
+                    $(".page-loading").height(actual_form_height);
+
+                    $(".actual-form").addClass("d-none");
+                    $(".page-loading").removeClass("d-none");
+
                     $("#register_submit").text("Please wait...");
                     $("#register_submit").attr("disabled", true);
 
@@ -237,6 +276,7 @@
 
                     formData.append('student_number', student_number);
                     formData.append('email', email);
+
                     formData.append('validate_student_number_and_email', true);
 
                     $.ajax({
@@ -251,6 +291,9 @@
                                 var formData = new FormData();
 
                                 formData.append('student_number', student_number);
+                                formData.append('first_name', first_name);
+                                formData.append('middle_name', middle_name);
+                                formData.append('last_name', last_name);
                                 formData.append('name', name);
                                 formData.append('email', email);
                                 formData.append('mobile_number', mobile_number);
@@ -295,6 +338,9 @@
 
                                 $("#register_submit").removeAttr("disabled");
                                 $("#register_submit").text("Submit");
+
+                                $(".actual-form").removeClass("d-none");
+                                $(".page-loading").addClass("d-none");
                             }
                         },
                         error: function(_, _, error) {

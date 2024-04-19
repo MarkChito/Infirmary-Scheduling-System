@@ -66,15 +66,27 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="update_profile_name" class="col-sm-2 col-form-label">Name</label>
+                                        <label for="update_profile_first_name" class="col-sm-2 col-form-label">First Name</label>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="update_profile_name" placeholder="Name" required>
+                                            <input type="text" class="form-control" id="update_profile_first_name" placeholder="First Name" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="update_profile_middle_name" class="col-sm-2 col-form-label">Middle Name</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="update_profile_middle_name" placeholder="Middle Name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="update_profile_last_name" class="col-sm-2 col-form-label">Last Name</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="update_profile_last_name" placeholder="Last Name" required>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="update_profile_email" class="col-sm-2 col-form-label">Email</label>
                                         <div class="col-sm-10">
-                                            <input type="email" class="form-control" id="update_profile_email" placeholder="Email" required>
+                                            <input type="email" class="form-control" id="update_profile_email" placeholder="Email" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group row">
