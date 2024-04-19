@@ -33,7 +33,7 @@
                         </thead>
                         <tbody>
                             <?php
-                            require_once "./env_functions.php";
+                            require_once "./env/autoload.php";
 
                             $env_data = readFromEnvFile();
 
