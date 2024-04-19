@@ -28,6 +28,7 @@ $base_url = $env_data["BASE_URL"];
 
     formData.append('student_number', params.student_number);
     formData.append('email', params.email);
+    
     formData.append('verify_email', true);
 
     $.ajax({

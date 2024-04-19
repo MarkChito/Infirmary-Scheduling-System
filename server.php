@@ -772,11 +772,22 @@ if (isset($_POST["update_account"])) {
 
     $response = false;
 
-    $sql_1 = "SELECT account_id FROM tbl_students WHERE student_number = '" . $student_number . "'";
+    $sql_1 = "SELECT account_id, first_name, middle_name, last_name FROM tbl_students WHERE student_number = '" . $student_number . "'";
     $stmt_1 = sqlsrv_query($conn, $sql_1);
 
     while ($row_1 = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
         $db_user_id = $row_1["account_id"];
+        $first_name = $row_1["first_name"];
+        $middle_name = $row_1["middle_name"];
+        $last_name = $row_1["last_name"];
+    }
+
+    $name = $first_name . ' ' . $last_name;
+
+    if (!empty($middle_name)) {
+        $middle_initial = strtoupper(substr($middle_name, 0, 1)) . '.';
+
+        $name = $first_name . ' ' . $middle_initial . ' ' . $last_name;
     }
 
     $sql_2 = "SELECT password FROM tbl_accounts WHERE id = '" . $db_user_id . "'";
@@ -787,7 +798,7 @@ if (isset($_POST["update_account"])) {
     }
 
     if (password_verify($current_password, $db_password)) {
-        $sql_2 = "UPDATE tbl_accounts SET password = '" . password_hash($password, PASSWORD_BCRYPT) . "' WHERE id = '" . $db_user_id . "'";
+        $sql_2 = "UPDATE tbl_accounts SET modified_at = '" . date("Y-m-d H:i:s") . "', modified_by = '" . $name . "', password = '" . password_hash($password, PASSWORD_BCRYPT) . "' WHERE id = '" . $db_user_id . "'";
         sqlsrv_query($conn, $sql_2);
 
         $response = true;
@@ -808,15 +819,26 @@ if (isset($_POST["verify_email"])) {
     $student_number = $_POST["student_number"];
     $email = $_POST["email"];
 
-    $sql_1 = "SELECT name FROM tbl_students WHERE student_number = '" . $student_number . "' AND email = '" . $email . "'";
+    $sql_1 = "SELECT account_id, first_name, middle_name, last_name FROM tbl_students WHERE student_number = '" . $student_number . "' AND email = '" . $email . "'";
     $stmt_1 = sqlsrv_query($conn, $sql_1);
 
     if (sqlsrv_has_rows($stmt_1)) {
         while ($row = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
-            $name = $row["name"];
+            $user_id = $row["account_id"];
+            $first_name = $row["first_name"];
+            $middle_name = $row["middle_name"];
+            $last_name = $row["last_name"];
         }
 
-        $sql_2 = "UPDATE tbl_accounts SET modified_at = '" . date("Y-m-d H:i:s") . "', modified_by = '" . $name . "', is_verified = '1' WHERE student_number = '" . $student_number . "'";
+        $name = $first_name . ' ' . $last_name;
+
+        if (!empty($middle_name)) {
+            $middle_initial = strtoupper(substr($middle_name, 0, 1)) . '.';
+
+            $name = $first_name . ' ' . $middle_initial . ' ' . $last_name;
+        }
+
+        $sql_2 = "UPDATE tbl_accounts SET modified_at = '" . date("Y-m-d H:i:s") . "', modified_by = '" . $name . "', is_verified = '1' WHERE id = '" . $user_id . "'";
         sqlsrv_query($conn, $sql_2);
 
         $_SESSION["notification"] = array(

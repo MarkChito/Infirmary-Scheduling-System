@@ -17,7 +17,7 @@
                 <form action="javascript:void(0)" id="login_form">
                     <div class="form-group mb-3">
                         <label for="login_student_number">Student Number</label>
-                        <input type="text" class="form-control" id="login_student_number" required>
+                        <input type="number" class="form-control" id="login_student_number" required>
                     </div>
                     <div class="form-group mb-2">
                         <label for="login_password">Password</label>
