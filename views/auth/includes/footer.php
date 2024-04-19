@@ -146,7 +146,7 @@
                 const pwd = $("#initial_configurations_password").val();
 
                 $(".initial-configurations-form").addClass("d-none");
-                $(".loading").removeClass("d-none");
+                $(".page-loading").removeClass("d-none");
 
                 var formData = new FormData();
 
@@ -172,7 +172,7 @@
                                     location.href = base_url;
                                 }, 1500);
                             } else {
-                                $(".loading").addClass("d-none");
+                                $(".page-loading").addClass("d-none");
 
                                 $("#alert_message").text(response.message);
                                 $("#alert_message").removeClass("d-none");

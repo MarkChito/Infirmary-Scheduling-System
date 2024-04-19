@@ -1,9 +1,13 @@
 <?php include_once "views/auth/includes/header.php" ?>
 
 <div class="wrapper">
-    <div class="loading d-none">
-        <span class="alert alert-primary d-block text-center">Please wait a moment . . .</span>
-        <img src="<?= $base_url ?>dist/img/loading.gif" alt="">
+    <div class="page-loading d-none">
+        <div class="loading-parent">
+            <div class="loading-container">
+                <div class="loading"></div>
+                <div id="loading-text">Loading</div>
+            </div>
+        </div>
     </div>
 
     <div class="initial-configurations-form">
@@ -11,7 +15,7 @@
 
         <div class="card bg-gray" style="width: 500px;">
             <div class="card-header text-center">
-                <img src="<?= $base_url ?>dist/img/image-placeholder.png" style="width: 150px;" alt="Logo" class="mb-2 img-circle pt-3">
+                <img src="<?= $base_url ?>dist/img/image-placeholder.png" style="width: 150px; height: 150px; border-radius: 50%;" alt="Logo" class="mb-2 mt-2">
                 <h1>Infirmary Scheduling System</h1>
             </div>
             <div class="card-body">
