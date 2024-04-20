@@ -45,6 +45,9 @@ switch ($current_tab) {
     <link rel="stylesheet" href="<?= $base_url ?>plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="<?= $base_url ?>plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="<?= $base_url ?>plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="<?= $base_url ?>plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="<?= $base_url ?>plugins/datetimepicker/css/datetimepicker.css">
+    <link rel="stylesheet" href="<?= $base_url ?>dist/css/style.css">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -71,12 +74,12 @@ switch ($current_tab) {
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link account_settings" href="javascript:void(0)" role="button">
+                    <a class="nav-link account_settings" href="javascript:void(0)" role="button" title="Account Settings">
                         <i class="fas fa-cog"></i>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-danger logout" href="javascript:void(0)" role="button">
+                    <a class="nav-link text-danger logout" href="javascript:void(0)" role="button" title="Logout">
                         <i class="fas fa-sign-out-alt"></i>
                     </a>
                 </li>

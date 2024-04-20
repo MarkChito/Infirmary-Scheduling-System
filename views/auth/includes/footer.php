@@ -137,7 +137,7 @@
                 alert_message(notification);
             }
 
-            disable_developer_functions(false);
+            disable_developer_functions(true);
 
             $("#initial_configurations_form").submit(function() {
                 const server_name = $("#initial_configurations_server_name").val();
@@ -262,7 +262,7 @@
                 }
 
                 if (errors == 0) {
-                    let actual_form_height = $(".actual-form").height();
+                    const actual_form_height = $(".actual-form").height();
 
                     $(".page-loading").height(actual_form_height);
 

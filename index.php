@@ -8,9 +8,13 @@ if (session_status() == PHP_SESSION_NONE) {
 $env_data = readFromEnvFile();
 
 if (empty($env_data)) {
-    $version = "1.0.0";
-    $base_url = "http://localhost/Infirmary-Scheduling-System/";
+    $REQUEST_SCHEME = $_SERVER["REQUEST_SCHEME"];
+    $SERVER_NAME = $_SERVER["SERVER_NAME"];
+    $SCRIPT_FILENAME = explode("/", $_SERVER["SCRIPT_FILENAME"])[3];
 
+    $version = "1.0.0";
+    $base_url = $REQUEST_SCHEME . "://" . $SERVER_NAME . "/" . $SCRIPT_FILENAME . "/";
+    
     $_SESSION["current_tab"] = "initial_config";
 
     include "./views/initial_configurations_view.php";

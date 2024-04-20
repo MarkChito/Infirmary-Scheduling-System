@@ -1,6 +1,6 @@
 <?php include_once "views/auth/includes/header.php" ?>
 
-<div class="wrapper">
+<div class="login-wrapper">
     <div class="page-loading d-none">
         <div class="loading-parent">
             <div class="loading-container">

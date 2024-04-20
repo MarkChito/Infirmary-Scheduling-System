@@ -46,13 +46,20 @@ if (isset($_POST["check_database_connection"])) {
     $conn = sqlsrv_connect($server_name, $connection_info);
 
     if ($conn) {
+        $REQUEST_SCHEME = $_SERVER["REQUEST_SCHEME"];
+        $SERVER_NAME = $_SERVER["SERVER_NAME"];
+        $SCRIPT_FILENAME = explode("/", $_SERVER["SCRIPT_FILENAME"])[3];
+
+        $version = "1.0.0";
+        $base_url = $REQUEST_SCHEME . "://" . $SERVER_NAME . "/" . $SCRIPT_FILENAME . "/";
+
         $data = array(
             "SERVER_NAME" => $server_name,
             "DATABASE" => $database,
             "UID" => $uid,
             "PWD" => $pwd,
-            "VERSION" => "1.0.0",
-            "BASE_URL" => "http://localhost/Infirmary-Scheduling-System/",
+            "VERSION" => $version,
+            "BASE_URL" => $base_url,
         );
 
         writeToEnvFile($data);
@@ -857,6 +864,66 @@ if (isset($_POST["verify_email"])) {
     sqlsrv_close($conn);
 
     echo json_encode(true);
+}
+
+if (isset($_POST["generate_schedule"])) {
+    $account_id = $_POST["account_id"];
+    $purpose_of_registration = $_POST["purpose_of_registration"];
+    $appointment_date = $_POST["appointment_date"];
+    $appointment_time = $_POST["appointment_time"];
+
+    $sql_1 = "SELECT name FROM tbl_accounts WHERE id = '" . $account_id . "'";
+    $stmt_1 = sqlsrv_query($conn, $sql_1);
+
+    while ($row_1 = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
+        $db_name = $row_1["name"];
+    }
+
+    $created_at = date("Y-m-d H:i:s");
+    $created_by = $db_name;
+    $status = "Pending";
+
+    $response = false;
+    $errors = 0;
+
+    $sql_2 = "SELECT id FROM tbl_appointments WHERE appointment_date = '" . $appointment_date . "' AND appointment_time = '" . $appointment_time . "' AND (status = '" . $status . "' OR status = 'Appoved')";
+    $stmt_2 = sqlsrv_query($conn, $sql_2);
+
+    if (sqlsrv_has_rows($stmt_2)) {
+        $errors++;
+    }
+
+    $sql_3 = "SELECT id FROM tbl_appointments WHERE account_id = '" . $account_id . "' AND (status = '" . $status . "' OR status = 'Appoved')";
+    $stmt_3 = sqlsrv_query($conn, $sql_3);
+
+    if (sqlsrv_has_rows($stmt_3)) {
+        $_SESSION["notification"] = array(
+            "title" => "Oops...",
+            "text" => "You still have a pending or active appointment.",
+            "icon" => "error",
+        );
+
+        $response = true;
+
+        $errors++;
+    }
+
+    if ($errors == 0) {
+        $sql_4 = "INSERT INTO tbl_appointments (created_at, created_by, account_id, purpose_of_registration, appointment_date, appointment_time, status) VALUES ('" . $created_at . "', '" . $created_by . "', '" . $account_id . "', '" . $purpose_of_registration . "', '" . $appointment_date . "', '" . $appointment_time . "', '" . $status . "')";
+        sqlsrv_query($conn, $sql_4);
+
+        $_SESSION["notification"] = array(
+            "title" => "Success!",
+            "text" => "Your appointment request has been submitted.",
+            "icon" => "success",
+        );
+
+        $response = true;
+    }
+
+    sqlsrv_close($conn);
+
+    echo json_encode($response);
 }
 
 if (isset($_POST["logout"])) {

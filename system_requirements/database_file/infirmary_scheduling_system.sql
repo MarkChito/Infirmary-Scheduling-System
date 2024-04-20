@@ -38,6 +38,20 @@ CREATE TABLE tbl_students (
     year_level VARCHAR(8)
 );
 
+-- Create the Table tbl_appointments
+CREATE TABLE tbl_appointments (
+    id INT PRIMARY KEY IDENTITY(1, 1),
+    created_at VARCHAR(19),
+    modified_at VARCHAR(19),
+    created_by VARCHAR(30),
+    modified_by VARCHAR(30),
+    account_id INT,
+    purpose_of_registration VARCHAR(20),
+    appointment_date VARCHAR(11),
+    appointment_time VARCHAR(8),
+    status VARCHAR(9)
+);
+
 -- Insert default credentials for Administrator
 INSERT INTO
     tbl_accounts (
@@ -82,6 +96,7 @@ VALUES
         1
     );
 
+-- Insert Sample Student data
 INSERT INTO
     tbl_students (
         created_at,

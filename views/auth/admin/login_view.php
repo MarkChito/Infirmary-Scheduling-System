@@ -1,6 +1,6 @@
 <?php include_once "views/auth/includes/header.php" ?>
 
-<div class="wrapper">
+<div class="login-wrapper">
     <div class="login-form">
         <span class="alert alert-danger text-center d-none" id="alert_message"></span>
 
