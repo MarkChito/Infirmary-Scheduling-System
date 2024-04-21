@@ -23,7 +23,9 @@ if (empty($env_data)) {
     if (isset($_SESSION["user_id"]) && $_SESSION["user_type"] == "student") {
         $_SESSION["current_tab"] = "profile";
 
-        include "./views/pages/student/profile_view.php";
+        include_once "views/pages/includes/header.php";
+        include_once "./views/pages/student/profile_view.php";
+        include_once "views/pages/includes/footer.php";
     } else {
         $_SESSION["notification"] = array(
             "title" => "Oops..",

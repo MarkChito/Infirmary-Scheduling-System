@@ -1,5 +1,3 @@
-<?php include_once "views/pages/includes/header.php" ?>
-
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
@@ -143,5 +141,3 @@
         </div>
     </section>
 </div>
-
-<?php include_once "views/pages/includes/footer.php" ?>

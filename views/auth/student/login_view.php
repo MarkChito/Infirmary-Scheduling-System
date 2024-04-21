@@ -1,5 +1,3 @@
-<?php include_once "views/auth/includes/header.php" ?>
-
 <div class="login-wrapper">
     <div class="login-form">
         <div class="alert text-center fade d-none" id="div_alert_message" role="alert">
@@ -39,5 +37,3 @@
         </div>
     </div>
 </div>
-
-<?php include_once "views/auth/includes/footer.php" ?>

@@ -24,5 +24,7 @@ if (empty($env_data)) {
 
     $_SESSION["current_tab"] = "admin_login";
 
-    include "./views/auth/admin/login_view.php";
+    include_once "./views/auth/includes/header.php";
+    include_once "./views/auth/admin/login_view.php";
+    include_once "./views/auth/includes/footer.php";
 }

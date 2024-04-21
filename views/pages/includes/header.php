@@ -17,7 +17,7 @@ switch ($current_tab) {
 
         break;
     default:
-        // Ignore this line
+        $title = null;
 }
 ?>
 
@@ -74,7 +74,7 @@ switch ($current_tab) {
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link account_settings" href="javascript:void(0)" role="button" title="Account Settings">
+                    <a class="nav-link <?= $user_type == "admin" ? "admin_account_settings" : "account_settings" ?>" href="javascript:void(0)" role="button" title="Account Settings">
                         <i class="fas fa-cog"></i>
                     </a>
                 </li>
@@ -105,6 +105,21 @@ switch ($current_tab) {
                                 <p>Dashboard</p>
                             </a>
                         </li>
+                        <?php if ($user_type == "admin") : ?>
+                            <li class="nav-item">
+                                <a href="<?= $base_url ?>manage_students" class="nav-link <?= $_SESSION["current_tab"] == "manage_students" ? "active" : null ?>">
+                                    <i class="nav-icon fas fa-graduation-cap"></i>
+                                    <p>Manage Students</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="<?= $base_url ?>manage_appointments" class="nav-link <?= $_SESSION["current_tab"] == "manage_appointments" ? "active" : null ?>">
+                                    <i class="nav-icon fas fa-calendar-alt"></i>
+                                    <p>Manage Appointments</p>
+                                </a>
+                            </li>
+                        <?php endif ?>
+
                         <?php if ($user_type == "student") : ?>
                             <li class="nav-item">
                                 <a href="<?= $base_url ?>appointments" class="nav-link <?= $_SESSION["current_tab"] == "appointments" ? "active" : null ?>">

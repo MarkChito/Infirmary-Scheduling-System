@@ -1,5 +1,3 @@
-<?php include_once "views/auth/includes/header.php" ?>
-
 <div class="login-wrapper">
     <div class="page-loading d-none">
         <div class="loading-parent">
@@ -75,5 +73,3 @@
         </div>
     </div>
 </div>
-
-<?php include_once "views/auth/includes/footer.php" ?>

@@ -59,6 +59,56 @@
         </div>
     </div>
 
+    <!-- Update Admin Account Modal -->
+    <div class="modal fade" id="update_admin_account_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Update Admin Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="javascript:void(0)" id="update_admin_account_form">
+                    <div class="modal-body">
+                        <div class="page-loading d-none">
+                            <div class="loading-parent">
+                                <div class="loading-container">
+                                    <div class="loading"></div>
+                                    <div id="loading-text">Loading</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="actual-form d-none">
+                            <div class="form-group">
+                                <label for="update_admin_account_username">Username</label>
+                                <input type="text" class="form-control" id="update_admin_account_username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="update_admin_account_current_password">Current Password</label>
+                                <input type="password" class="form-control" id="update_admin_account_current_password" required>
+                                <small class="text-danger d-none" id="error_update_admin_account_current_password">Password is incorrect</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="update_admin_account_password">New Password</label>
+                                <input type="password" class="form-control" id="update_admin_account_password" required>
+                                <small class="text-danger d-none" id="error_update_admin_account_password">Passwords do not match</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="update_admin_account_confirm_password">Confirm New Password</label>
+                                <input type="password" class="form-control" id="update_admin_account_confirm_password" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="update_admin_account_submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Generate Schedule Modal -->
     <div class="modal fade" id="generate_schedule_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -178,6 +228,8 @@
             if (user_type == "student") {
                 if (current_tab == "dashboard") {
                     get_student_data(user_id);
+                    get_pending_schedules(user_id);
+                    get_cancelled_schedules(user_id);
                 }
 
                 if (current_tab == "profile") {
@@ -202,6 +254,7 @@
             $(".logout").click(function() {
                 var formData = new FormData();
 
+                formData.append('user_type', user_type);
                 formData.append('logout', true);
 
                 $.ajax({
@@ -212,7 +265,11 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        location.href = base_url;
+                        if (response == "admin") {
+                            location.href = base_url + "admin";
+                        } else {
+                            location.href = base_url;
+                        }
                     },
                     error: function(_, _, error) {
                         console.error(error);
@@ -324,7 +381,7 @@
                 var formData = new FormData();
 
                 formData.append('user_id', user_id);
-                formData.append('get_user_data', true);
+                formData.append('get_student_data', true);
 
                 $.ajax({
                     url: 'server.php',
@@ -342,6 +399,46 @@
                     error: function(_, _, error) {
                         console.error(error);
                     }
+                });
+            })
+
+            $(".admin_account_settings").click(function() {
+                $(".page-loading").removeClass("d-none");
+                $(".actual-form").addClass("d-none");
+
+                $("#update_admin_account_modal").modal("show");
+
+                var formData = new FormData();
+
+                formData.append('user_id', user_id);
+                formData.append('get_user_data', true);
+
+                $.ajax({
+                    url: 'server.php',
+                    data: formData,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $("#update_admin_account_username").val(response.username);
+
+                        $(".page-loading").addClass("d-none");
+                        $(".actual-form").removeClass("d-none");
+                    },
+                    error: function(_, _, error) {
+                        console.error(error);
+                    }
+                });
+            })
+
+            $("#update_admin_account_form").submit(function() {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "No Function Yet!",
+                    showConfirmButton: false,
+                    timer: 1500
                 });
             })
 
@@ -536,7 +633,92 @@
 
                 $("#error_generate_schedule_time").addClass("d-none");
                 $("#generate_schedule_time").removeClass("is-invalid");
-            });
+            })
+
+            $(document).on("click", ".btn_cancel_appointment", function() {
+                const appointment_id = $(this).attr("appointment_id");
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You are going to cancel this request!",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Confirm"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var formData = new FormData();
+
+                        formData.append('user_id', user_id);
+                        formData.append('appointment_id', appointment_id);
+                        formData.append('cancel_appointment', true);
+
+                        $.ajax({
+                            url: 'server.php',
+                            data: formData,
+                            type: 'POST',
+                            dataType: 'JSON',
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                location.href = base_url + "appointments";
+                            },
+                            error: function(_, _, error) {
+                                console.error(error);
+                            }
+                        });
+                    }
+                });
+            })
+
+            function get_cancelled_schedules(user_id) {
+                var formData = new FormData();
+
+                formData.append('user_id', user_id);
+                formData.append('get_cancelled_schedules', true);
+
+                $.ajax({
+                    url: 'server.php',
+                    data: formData,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (!response) {
+                            $("#generate_schedule").removeAttr("disabled");
+                        }
+                    },
+                    error: function(_, _, error) {
+                        console.error(error);
+                    }
+                });
+            }
+
+            function get_pending_schedules(user_id) {
+                var formData = new FormData();
+
+                formData.append('user_id', user_id);
+                formData.append('get_pending_schedules', true);
+
+                $.ajax({
+                    url: 'server.php',
+                    data: formData,
+                    type: 'POST',
+                    dataType: 'JSON',
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response) {
+                            $("#dashboard_pending_schedule").text(response.appointment_date + " " + response.appointment_time);
+                        }
+                    },
+                    error: function(_, _, error) {
+                        console.error(error);
+                    }
+                });
+            }
 
             function error_walk_in_time(time_input, date_input) {
                 const date = new Date();
@@ -563,16 +745,16 @@
                     }
 
                     if (date_input == current_day) {
-                        if (current_hour >= 8 && current_hour <= 17) {
+                        if (current_hour >= 8 && current_hour < 17) {
                             if (hours < current_hour) {
                                 return "Time must be ahead of the current time";
                             }
                         }
-                        if (hours >= 8 && hours <= 17) {
+                        if (hours >= 8 && hours < 17) {
                             return false;
                         }
                     } else {
-                        if (hours >= 8 && hours <= 17) {
+                        if (hours >= 8 && hours < 17) {
                             return false;
                         }
                     }
@@ -648,15 +830,7 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        let name = response.first_name + " " + response.last_name;
-
-                        if (response.middle_name) {
-                            const middle_initial = response.middle_name.trim().charAt(0).toUpperCase() + ".";
-
-                            name = response.first_name + " " + middle_initial + " " + response.last_name;
-                        }
-
-                        $("#user_name").text(name);
+                        $("#user_name").text(response.name);
                     },
                     error: function(_, _, error) {
                         console.error(error);

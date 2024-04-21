@@ -17,12 +17,16 @@ if (empty($env_data)) {
     
     $_SESSION["current_tab"] = "initial_config";
 
-    include "./views/initial_configurations_view.php";
+    include_once "./views/auth/includes/header.php";
+    include_once "./views/initial_configurations_view.php";
+    include_once "./views/auth/includes/footer.php";
 } else {
     $version = $env_data["VERSION"];
     $base_url = $env_data["BASE_URL"];
 
     $_SESSION["current_tab"] = "student_login";
 
-    include "./views/auth/student/login_view.php";
+    include_once "./views/auth/includes/header.php";
+    include_once "./views/auth/student/login_view.php";
+    include_once "./views/auth/includes/footer.php";
 }

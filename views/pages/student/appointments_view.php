@@ -24,15 +24,53 @@
                     <table class="table table-bordered data-table">
                         <thead>
                             <tr>
-                                <th>Day</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
+                                <th>Purpose of Registration</th>
+                                <th>Appointment Date</th>
+                                <th>Appointment Time</th>
                                 <th>Status</th>
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            
+                            <?php if ($appointment_data) : ?>
+                                <?php foreach ($appointment_data as $appointment_data_row) : ?>
+                                    <?php
+                                    switch ($appointment_data_row["status"]) {
+                                        case "Pending":
+                                            $status_color = "text-success";
+
+                                            break;
+                                        case "Approved":
+                                            $status_color = "text-primary";
+
+                                            break;
+                                        case "Rejected":
+                                            $status_color = "text-danger";
+
+                                            break;
+                                        case "Expired":
+                                            $status_color = "text-danger";
+
+                                            break;
+                                        case "Cancelled":
+                                            $status_color = "text-danger";
+
+                                            break;
+                                        default:
+                                            $status_color = null;
+                                    }
+                                    ?>
+                                    <tr>
+                                        <td><?= $appointment_data_row["purpose_of_registration"] ?></td>
+                                        <td><?= date("F j, Y", strtotime($appointment_data_row["appointment_date"])) ?></td>
+                                        <td><?= $appointment_data_row["appointment_time"] ?></td>
+                                        <td class="<?= $status_color ?>"><?= $appointment_data_row["status"] ?></td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-danger btn-sm btn_cancel_appointment" appointment_id="<?= $appointment_data_row["id"] ?>" <?= $appointment_data_row["status"] != "Pending" ? "disabled" : null ?>>Cancel</button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach ?>
+                            <?php endif ?>
                         </tbody>
                     </table>
                 </div>

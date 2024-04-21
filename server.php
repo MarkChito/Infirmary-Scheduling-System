@@ -608,19 +608,21 @@ if (isset($_POST["admin_login"])) {
     $sql = "SELECT * FROM tbl_accounts WHERE username = '" . $username . "'";
     $stmt = sqlsrv_query($conn, $sql);
 
-    $rows = 0;
+    if (sqlsrv_has_rows($stmt)) {
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+            $db_user_id = $row["id"];
+            $db_name = $row["name"];
+            $db_password = $row["password"];
+            $db_user_type = $row["user_type"];
+        }
 
-    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $db_password = $row["password"];
-
-        $rows++;
-    }
-
-    if ($rows) {
         if (password_verify($password, $db_password)) {
+            $_SESSION["user_id"] = $db_user_id;
+            $_SESSION["user_type"] = $db_user_type;
+
             $_SESSION["notification"] = array(
                 "title" => "Success!",
-                "text" => "Administrator account is valid!",
+                "text" => "Welcome, " . $db_name . "!",
                 "icon" => "success",
             );
 
@@ -652,15 +654,13 @@ if (isset($_POST["admin_login"])) {
 if (isset($_POST["get_user_data"])) {
     $user_id = $_POST["user_id"];
 
-    $sql = "SELECT student_number, first_name, middle_name, last_name FROM tbl_students WHERE account_id = '" . $user_id . "'";
+    $sql = "SELECT name, username FROM tbl_accounts WHERE id = '" . $user_id . "'";
     $stmt = sqlsrv_query($conn, $sql);
 
     while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         $response = array(
-            "student_number" => $row["student_number"],
-            "first_name" => $row["first_name"],
-            "middle_name" => $row["middle_name"],
-            "last_name" => $row["last_name"],
+            "name" => $row["name"],
+            "username" => $row["username"],
         );
     }
 
@@ -926,7 +926,84 @@ if (isset($_POST["generate_schedule"])) {
     echo json_encode($response);
 }
 
+if (isset($_POST["cancel_appointment"])) {
+    $appointment_id = $_POST["appointment_id"];
+    $user_id = $_POST["user_id"];
+
+    $sql_1 = "SELECT name FROM tbl_accounts WHERE id = '" . $user_id . "'";
+    $stmt_1 = sqlsrv_query($conn, $sql_1);
+
+    while ($row_1 = sqlsrv_fetch_array($stmt_1, SQLSRV_FETCH_ASSOC)) {
+        $db_name = $row_1["name"];
+    }
+
+    $created_at = date("Y-m-d H:i:s");
+    $created_by = $db_name;
+    $status = "Cancelled";
+
+    $sql_2 = "UPDATE tbl_appointments SET created_at = '" . $created_at . "', created_by = '" . $created_by . "', status = '" . $status . "' WHERE id = '" . $appointment_id . "'";
+    sqlsrv_query($conn, $sql_2);
+
+    $_SESSION["notification"] = array(
+        "title" => "Success!",
+        "text" => "An appointment has been cancelled.",
+        "icon" => "success",
+    );
+
+    sqlsrv_close($conn);
+
+    echo json_encode(true);
+}
+
+if (isset($_POST["get_pending_schedules"])) {
+    $user_id = $_POST["user_id"];
+
+    $response = false;
+
+    $sql = "SELECT appointment_date, appointment_time FROM tbl_appointments WHERE account_id = '" . $user_id . "' AND status = 'Pending'";
+    $stmt = sqlsrv_query($conn, $sql);
+
+    if (sqlsrv_has_rows($stmt)) {
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+            $response = array(
+                "appointment_date" => date("F j, Y", strtotime($row["appointment_date"])),
+                "appointment_time" => $row["appointment_time"]
+            );
+        }
+    }
+
+    sqlsrv_close($conn);
+
+    echo json_encode($response);
+}
+
+if (isset($_POST["get_cancelled_schedules"])) {
+    $user_id = $_POST["user_id"];
+
+    $response = false;
+    $number_of_rows = 0;
+
+    $sql = "SELECT id FROM tbl_appointments WHERE account_id = '" . $user_id . "' AND status = 'Cancelled'";
+    $stmt = sqlsrv_query($conn, $sql);
+
+    if (sqlsrv_has_rows($stmt)) {
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+            $number_of_rows++;
+        }
+    }
+
+    if ($number_of_rows >= 3) {
+        $response = true;
+    }
+
+    sqlsrv_close($conn);
+
+    echo json_encode($response);
+}
+
 if (isset($_POST["logout"])) {
+    $user_type = $_POST["user_type"];
+
     unset($_SESSION["user_id"], $_SESSION["user_type"]);
 
     $_SESSION["notification"] = array(
@@ -935,5 +1012,5 @@ if (isset($_POST["logout"])) {
         "icon" => "success",
     );
 
-    echo json_encode(true);
+    echo json_encode($user_type);
 }

@@ -23,9 +23,37 @@ if (empty($env_data)) {
     $_SESSION["current_tab"] = "dashboard";
 
     if (isset($_SESSION["user_id"]) && $_SESSION["user_type"] == "student") {
-        include "./views/pages/student/dashboard_view.php";
+        $server_name = $env_data["SERVER_NAME"];
+        $database = $env_data["DATABASE"];
+        $uid = $env_data["UID"];
+        $pwd = $env_data["PWD"];
+
+        $connection_info = array(
+            "Database" => $database,
+            "Uid" => $uid,
+            "PWD" => $pwd
+        );
+
+        $conn = sqlsrv_connect($server_name, $connection_info);
+
+        $sql = "SELECT id, purpose_of_registration, appointment_date, appointment_time, status FROM tbl_appointments WHERE account_id = '" . $_SESSION["user_id"] . "' ORDER BY id DESC";
+        $stmt = sqlsrv_query($conn, $sql);
+
+        $appointment_data = [];
+
+        if ($stmt !== false) {
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $appointment_data[] = $row;
+            }
+        }
+
+        include_once "views/pages/includes/header.php";
+        include_once "./views/pages/student/dashboard_view.php";
+        include_once "views/pages/includes/footer.php";
     } else if (isset($_SESSION["user_id"]) && $_SESSION["user_type"] == "admin") {
-        include "./views/pages/admin/dashboard_view.php";
+        include_once "views/pages/includes/header.php";
+        include_once "./views/pages/admin/dashboard_view.php";
+        include_once "views/pages/includes/footer.php";
     } else {
         $_SESSION["notification"] = array(
             "title" => "Oops..",

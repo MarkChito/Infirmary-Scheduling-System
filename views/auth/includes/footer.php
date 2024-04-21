@@ -197,6 +197,17 @@
                     passwordField.attr("type", "password");
                 }
             })
+            
+            $("#admin_login_show_password").change(function() {
+                var passwordField = $("#admin_login_password");
+                var passwordFieldType = passwordField.attr("type");
+
+                if ($(this).is(":checked")) {
+                    passwordField.attr("type", "text");
+                } else {
+                    passwordField.attr("type", "password");
+                }
+            })
 
             $('#initial_configurations_authentication').change(function() {
                 if ($(this).val() == 'Windows Authentication') {
@@ -435,7 +446,11 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        location.href = base_url + "admin";
+                        if (response) {
+                            location.href = base_url + "dashboard";
+                        } else {
+                            location.href = base_url + "admin";
+                        }
                     },
                     error: function(_, _, error) {
                         console.error(error);

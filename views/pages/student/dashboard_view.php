@@ -1,5 +1,3 @@
-<?php include_once "views/pages/includes/header.php" ?>
-
 <div class="content-wrapper">
     <div class="content-header">
         <div class="container-fluid">
@@ -8,7 +6,7 @@
                     <h1 class="m-0">Dashboard</h1>
                 </div>
                 <div class="col-sm-6">
-                    <button class="btn btn-primary float-right" id="generate_schedule">
+                    <button class="btn btn-primary float-right" id="generate_schedule" disabled>
                         <i class="fas fa-calendar-plus mr-1"></i>
                         Generate Schedule
                     </button>
@@ -22,8 +20,8 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="small-box bg-primary">
-                        <div class="inner">
-                            <h3 id="dashboard_todays_schedule">N/A</h3>
+                        <div class="inner pb-4">
+                            <h5 id="dashboard_todays_schedule">No Available Data</h5>
 
                             <p>Today's Schedule</p>
                         </div>
@@ -35,8 +33,8 @@
                 </div>
                 <div class="col-md-4">
                     <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3 id="dashboard_pending_schedule">N/A</h3>
+                        <div class="inner pb-4">
+                            <h5 id="dashboard_pending_schedule">No Available Data</h5>
 
                             <p>Pending Schedule</p>
                         </div>
@@ -48,8 +46,8 @@
                 </div>
                 <div class="col-md-4">
                     <div class="small-box bg-danger">
-                        <div class="inner">
-                            <h3 id="dashboard_expired_schedules">0</h3>
+                        <div class="inner pb-4">
+                            <h5 id="dashboard_expired_schedules">0</h5>
 
                             <p>Expired Schedules</p>
                         </div>
@@ -101,14 +99,49 @@
                                 <table class="table table-bordered data-table">
                                     <thead>
                                         <tr>
-                                            <th>Day</th>
-                                            <th>Start Time</th>
-                                            <th>End Time</th>
+                                            <th>Purpose of Registration</th>
+                                            <th>Appointment Date</th>
+                                            <th>Appointment Time</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        
+                                        <?php if ($appointment_data) : ?>
+                                            <?php foreach ($appointment_data as $appointment_data_row) : ?>
+                                                <?php
+                                                switch ($appointment_data_row["status"]) {
+                                                    case "Pending":
+                                                        $status_color = "text-success";
+
+                                                        break;
+                                                    case "Approved":
+                                                        $status_color = "text-primary";
+
+                                                        break;
+                                                    case "Rejected":
+                                                        $status_color = "text-danger";
+
+                                                        break;
+                                                    case "Expired":
+                                                        $status_color = "text-danger";
+
+                                                        break;
+                                                    case "Cancelled":
+                                                        $status_color = "text-danger";
+
+                                                        break;
+                                                    default:
+                                                        $status_color = null;
+                                                }
+                                                ?>
+                                                <tr>
+                                                    <td><?= $appointment_data_row["purpose_of_registration"] ?></td>
+                                                    <td><?= date("F j, Y", strtotime($appointment_data_row["appointment_date"])) ?></td>
+                                                    <td><?= $appointment_data_row["appointment_time"] ?></td>
+                                                    <td class="<?= $status_color ?>"><?= $appointment_data_row["status"] ?></td>
+                                                </tr>
+                                            <?php endforeach ?>
+                                        <?php endif ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -119,5 +152,3 @@
         </div>
     </section>
 </div>
-
-<?php include_once "views/pages/includes/footer.php" ?>
